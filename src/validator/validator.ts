@@ -1,6 +1,6 @@
 import {BlogService} from "../services/blog-service";
-import {body, validationResult, CustomValidator} from 'express-validator';
 import {UserService} from "../services/user-service";
+import {body, validationResult, CustomValidator} from 'express-validator';
 
 export const myValidationResult = validationResult.withDefaults({
     formatter: error => {
@@ -22,7 +22,7 @@ const isWebsiteUrlPattern: CustomValidator = (value: string) => {
 
 const isBodyIdPattern: CustomValidator = async (value: string) => {
     const blogService = new BlogService()
-    const blog = await blogService.getOne(value)
+    const blog = await blogService.getOne(value);
     if (!blog) {
         throw new Error()
     }
@@ -48,7 +48,7 @@ const isEmailPattern: CustomValidator = (value: string) => {
     return true;
 }
 
-const isExistEmail: CustomValidator = async (value: string) => {
+const isExistByParam: CustomValidator = async (value: string) => {
     const userService = new UserService()
     const user = await userService.getUserByParam(value)
     if (user) {
@@ -58,53 +58,18 @@ const isExistEmail: CustomValidator = async (value: string) => {
     return true;
 }
 
-const isNotExistEmail: CustomValidator = async (value: string) => {
-    const userService = new UserService()
+const isNotExistByParamAndConfirm: CustomValidator= async (value: string) => {
+    const userService = new UserService();
     const user = await userService.getUserByParam(value)
     if (!user) {
         throw new Error()
     }
-
-    return true;
-}
-
-const isConfirmedCode: CustomValidator = async (value: string) => {
-    const userService = new UserService()
-    const user = await userService.getUserByParam(value)
     if (user?.isConfirmed) {
         throw new Error()
     }
 
     return true;
 }
-
-const isExistCode: CustomValidator = async (value: string) => {
-    const userService = new UserService()
-    const user = await userService.getUserByParam(value)
-    if (!user) {
-        throw new Error()
-    }
-
-    return true;
-}
-
-const isConfirmedEmail: CustomValidator = async (value: string) => {
-    const userService = new UserService()
-    const user = await userService.getUserByParam(value)
-    if (user?.isConfirmed) {
-        throw new Error()
-    }
-
-    return true;
-}
-
-const isExistLogin: CustomValidator = async (value: string) => {
-    const userService = new UserService()
-    const user = await userService.getUserByParam(value)
-    if (user) throw new Error()
-    return true
-}
-
 
 export const nameValidation = body('name')
     .trim()
@@ -175,7 +140,7 @@ export const loginValidation = body('login')
     .withMessage("Login has incorrect value. (Content has less than 3 or more than 10 characters)")
     .custom(isLoginPattern)
     .withMessage("Login has incorrect value. (Login doesn't match pattern)")
-    .custom(isExistLogin)
+    .custom(isExistByParam)
     .withMessage("Login is exist. (This login already exists enter another login)");
 
 export const passwordValidation = body('password')
@@ -198,9 +163,9 @@ export const emailValidation = body('email')
     .withMessage("Email has incorrect value. (Email doesn't string)")
     .custom(isEmailPattern)
     .withMessage("Email has incorrect value. (Email doesn't match pattern)")
-    .custom(isExistEmail)
+    .custom(isExistByParam)
     .withMessage("Email is exist. (This email already exists enter another email)")
-    .custom(isConfirmedEmail)
+    .custom(isNotExistByParamAndConfirm)
     .withMessage("Email is confirmed. (This email already confirmed)")
 
 
@@ -210,9 +175,9 @@ export const emailExistValidation = body('email')
     .withMessage("Email has incorrect value. (Email doesn't string)")
     .custom(isEmailPattern)
     .withMessage("Email has incorrect value. (Email doesn't match pattern)")
-    .custom(isNotExistEmail)
+    .custom(isNotExistByParamAndConfirm)
     .withMessage("Email is not exist. (This email not exists enter another email)")
-    .custom(isConfirmedEmail)
+    .custom(isNotExistByParamAndConfirm)
     .withMessage("Email is confirmed. (This email already confirmed)")
 
 export const emailValidationByPassword = body('email')
@@ -221,7 +186,7 @@ export const emailValidationByPassword = body('email')
     .withMessage("Email has incorrect value. (Email doesn't string)")
     .custom(isEmailPattern)
     .withMessage("Email has incorrect value. (Email doesn't match pattern)")
-    .custom(isNotExistEmail)
+    .custom(isNotExistByParamAndConfirm)
     .withMessage("Email is not exist. (This email not exists enter another email)")
 
 export const emailValidationByNewPassword = body('email')
@@ -242,16 +207,16 @@ export const codeConfirmed = body('code')
     .trim()
     .isString()
     .withMessage("Code has incorrect value. (Email doesn't string)")
-    .custom(isConfirmedCode)
+    .custom(isNotExistByParamAndConfirm)
     .withMessage("Code is confirmed. (This code already confirmed)")
-    .custom(isExistCode)
+    .custom(isNotExistByParamAndConfirm)
     .withMessage("Code is not exist. (This Code not exists)")
 
 export const recoveryCodeConfirmed = body('recoveryCode')
     .trim()
     .isString()
     .withMessage("Code has incorrect value. (Email doesn't string)")
-    .custom(isExistCode)
+    .custom(isNotExistByParamAndConfirm)
     .withMessage("Code is not exist. (This Code not exists)")
 
 
