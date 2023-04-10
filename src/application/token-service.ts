@@ -67,4 +67,12 @@ export class TokenService {
         const checkToken = await this.tokenRepository.findToken(token)
         return !!checkToken;
     }
+
+    public async getPayloadByToken(refreshToken: string) {
+        if (!refreshToken) return false ;
+        const isBlockedToken = await this.checkTokenByBlackList(refreshToken);
+        if (isBlockedToken) return false;
+
+        return await this.getPayloadByRefreshToken(refreshToken) as JWT;
+    }
 }

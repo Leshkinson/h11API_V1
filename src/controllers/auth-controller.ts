@@ -48,10 +48,8 @@ export class AuthController {
             const userService = new UserService();
 
             const {refreshToken} = req.cookies;
-            if (!refreshToken) throw new Error;
-            const isBlockedToken = await tokenService.checkTokenByBlackList(refreshToken);
-            if (isBlockedToken) throw new Error;
-            const payload = await tokenService.getPayloadByRefreshToken(refreshToken) as JWT;
+
+            const payload = await tokenService.getPayloadByToken(refreshToken);
             if (!payload) throw new Error;
             const user = await userService.getUserByParam(payload.email);
             if (user) {
@@ -74,11 +72,9 @@ export class AuthController {
             const sessionService = new SessionService();
             const userService = new UserService();
 
-            const {refreshToken} = req.cookies
-            if (!refreshToken) throw new Error;
-            const isBlockedToken = await tokenService.checkTokenByBlackList(refreshToken)
-            if (isBlockedToken) throw new Error;
-            const payload = await tokenService.getPayloadByRefreshToken(refreshToken) as JWT
+            const {refreshToken} = req.cookies;
+
+            const payload = await tokenService.getPayloadByToken(refreshToken);
             if (!payload) throw new Error
             const user = await userService.getUserByParam(payload.email);
             if (user) {
