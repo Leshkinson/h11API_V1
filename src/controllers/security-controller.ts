@@ -11,15 +11,12 @@ export class SecurityController {
             const sessionService = new SessionService();
 
             const {refreshToken} = req.cookies;
-            if (!refreshToken) throw new Error;
-            const isBlockedToken = await tokenService.checkTokenByBlackList(refreshToken);
-            if (isBlockedToken) throw new Error;
-            const payload = await tokenService.getPayloadByRefreshToken(refreshToken) as JWT;
-            if (!payload) throw new Error;
+
+            const payload = await tokenService.getPayloadFromToken(refreshToken);
             const user = await userService.getUserByParam(payload.email);
             if (user) {
                 const sessions = await sessionService.getAllSessionByUser(String(user._id));
-                res.status(200).json(sessions)
+                res.status(200).json(sessions);
             }
         } catch (error) {
             if (error instanceof Error) {
@@ -36,18 +33,16 @@ export class SecurityController {
             const sessionService = new SessionService();
 
             const {refreshToken} = req.cookies;
-            if (!refreshToken) throw new Error;
-            const isBlockedToken = await tokenService.checkTokenByBlackList(refreshToken);
-            if (isBlockedToken) throw new Error;
-            const payload = await tokenService.getPayloadByRefreshToken(refreshToken) as JWT;
+
+            const payload = await tokenService.getPayloadFromToken(refreshToken);
             if (!payload) {
-                res.sendStatus(403)
-                return
+                res.sendStatus(403);
+                return;
             }
             const user = await userService.getUserByParam(payload.email);
             if (user) {
-                await sessionService.deleteSessionWithExcept(String(user._id), payload.deviceId)
-                res.sendStatus(204)
+                await sessionService.deleteSessionWithExcept(String(user._id), payload.deviceId);
+                res.sendStatus(204);
             }
         } catch (error) {
             if (error instanceof Error) {
@@ -66,18 +61,18 @@ export class SecurityController {
             const {deviceId} = req.params;
             const {refreshToken} = req.cookies;
             if (!refreshToken) {
-                res.sendStatus(401)
-                return
+                res.sendStatus(401);
+                return;
             }
             const isBlockedToken = await tokenService.checkTokenByBlackList(refreshToken);
             if (isBlockedToken) {
-                res.sendStatus(401)
-                return
+                res.sendStatus(401);
+                return;
             }
             const payload = await tokenService.getPayloadByRefreshToken(refreshToken) as JWT;
             if (!payload) {
-                res.sendStatus(403)
-                return
+                res.sendStatus(403);
+                return;
             }
             const user = await userService.getUserByParam(payload.email);
             if (!user) throw new Error;
