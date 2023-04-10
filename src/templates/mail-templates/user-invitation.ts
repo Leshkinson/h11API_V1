@@ -1,7 +1,4 @@
-interface UserInvitation {
-    to: string,
-    html: string
-}
+import {UserInvitation} from "../../ts/interfaces";
 
 export function userInvitationTemplate(mail: string, code: string): UserInvitation {
     return {

@@ -1,10 +1,10 @@
+import {IDevice} from "../ts/interfaces";
 import {Request, Response} from "express";
 import {UserService} from "../services/user-service";
 import {QueryService} from "../services/query-service";
 import {TokenMapper} from "../dto/mappers/token-mapper";
-import {JWT, TokenService} from "../application/token-service";
 import {SessionService} from "../services/session-service";
-import {IDevice} from "../ts/interfaces";
+import {JWT, TokenService} from "../application/token-service";
 
 export class AuthController {
 
@@ -48,9 +48,8 @@ export class AuthController {
             const userService = new UserService();
 
             const {refreshToken} = req.cookies;
-
-            const payload = await tokenService.getPayloadByToken(refreshToken);
-            if (!payload) throw new Error;
+//TODO finish refactor
+            const payload = await tokenService.getPayloadFromToken(refreshToken);
             const user = await userService.getUserByParam(payload.email);
             if (user) {
                 await tokenService.addTokenToBlackList(refreshToken)
@@ -73,12 +72,11 @@ export class AuthController {
             const userService = new UserService();
 
             const {refreshToken} = req.cookies;
-
-            const payload = await tokenService.getPayloadByToken(refreshToken);
-            if (!payload) throw new Error
+//TODO finish refactor
+            const payload = await tokenService.getPayloadFromToken(refreshToken);
             const user = await userService.getUserByParam(payload.email);
             if (user) {
-                await tokenService.addTokenToBlackList(refreshToken)
+                await tokenService.addTokenToBlackList(refreshToken);
                 const updateSessionDevice = await sessionService.updateSession(payload.deviceId) as IDevice
                 const newAccessToken = tokenService.generateAccessToken(TokenMapper.prepareAccessModel(user))
                 const newRefreshToken = tokenService.generateRefreshToken(TokenMapper.prepareRefreshModel(user, updateSessionDevice))

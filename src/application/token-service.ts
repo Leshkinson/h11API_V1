@@ -1,6 +1,6 @@
-import jwt, {JwtPayload, Secret, SignOptions} from "jsonwebtoken";
 import {IToken} from "../ts/interfaces";
 import {TokenRepository} from "../repositories/token-repository";
+import jwt, {JwtPayload, Secret, SignOptions} from "jsonwebtoken";
 
 const settings = {
     JWT_ACCESS_SECRET: "superpupersecret",
@@ -22,7 +22,7 @@ export class TokenService {
     private readonly secretRefresh: Secret;
     private readonly optionsRefresh: SignOptions;
 
-    
+
     constructor() {
         this.tokenRepository = new TokenRepository();
         this.optionsAccess = settings.TOKEN_ACCESS_LIVE_TIME;
@@ -35,7 +35,7 @@ export class TokenService {
         return jwt.sign(payload, this.secretAccess, this.optionsAccess);
     }
 
-    public generateRefreshToken(payload: object):string {
+    public generateRefreshToken(payload: object): string {
         return jwt.sign(payload, this.secretRefresh, this.optionsRefresh);
     }
 
@@ -67,12 +67,16 @@ export class TokenService {
         const checkToken = await this.tokenRepository.findToken(token)
         return !!checkToken;
     }
-
-    public async getPayloadByToken(refreshToken: string) {
-        if (!refreshToken) return false ;
+//TODO finish refactor
+    public async getPayloadFromToken(refreshToken: string) {
+        if (!refreshToken) throw new Error;
         const isBlockedToken = await this.checkTokenByBlackList(refreshToken);
-        if (isBlockedToken) return false;
+        if (isBlockedToken) throw new Error;
+        const payload = await this.getPayloadByRefreshToken(refreshToken);
+        if (!payload) {
+            throw new Error
 
-        return await this.getPayloadByRefreshToken(refreshToken) as JWT;
+        }
+        return payload as JWT
     }
 }

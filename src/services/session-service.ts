@@ -1,6 +1,6 @@
 import {v4 as uuidv4} from "uuid";
-import {DeviceRepository} from "../repositories/device-repository";
 import {IDevice} from "../ts/interfaces";
+import {DeviceRepository} from "../repositories/device-repository";
 
 export class SessionService {
     private deviceRepository: DeviceRepository;

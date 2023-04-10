@@ -48,3 +48,8 @@ export interface IDevice {
     deviceId: string,
     userId: string,
 }
+
+export interface UserInvitation {
+    to: string,
+    html: string
+}

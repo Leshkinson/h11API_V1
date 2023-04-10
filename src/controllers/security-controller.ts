@@ -1,8 +1,7 @@
 import {Request, Response} from "express";
-import {QueryService} from "../services/query-service";
+import {UserService} from "../services/user-service";
 import {SessionService} from "../services/session-service";
 import {JWT, TokenService} from "../application/token-service";
-import {UserService} from "../services/user-service";
 
 export class SecurityController {
     static async getAllDevices(req: Request, res: Response) {
