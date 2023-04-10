@@ -50,7 +50,7 @@ const isEmailPattern: CustomValidator = (value: string) => {
 
 const isExistEmail: CustomValidator = async (value: string) => {
     const userService = new UserService()
-    const user = await userService.findByEmail(value)
+    const user = await userService.getUserByParam(value)
     if (user) {
         throw new Error()
     }
@@ -60,7 +60,7 @@ const isExistEmail: CustomValidator = async (value: string) => {
 
 const isNotExistEmail: CustomValidator = async (value: string) => {
     const userService = new UserService()
-    const user = await userService.findByEmail(value)
+    const user = await userService.getUserByParam(value)
     if (!user) {
         throw new Error()
     }
@@ -70,7 +70,7 @@ const isNotExistEmail: CustomValidator = async (value: string) => {
 
 const isConfirmedCode: CustomValidator = async (value: string) => {
     const userService = new UserService()
-    const user = await userService.findByCode(value)
+    const user = await userService.getUserByParam(value)
     if (user?.isConfirmed) {
         throw new Error()
     }
@@ -80,7 +80,7 @@ const isConfirmedCode: CustomValidator = async (value: string) => {
 
 const isExistCode: CustomValidator = async (value: string) => {
     const userService = new UserService()
-    const user = await userService.findByCode(value)
+    const user = await userService.getUserByParam(value)
     if (!user) {
         throw new Error()
     }
@@ -90,7 +90,7 @@ const isExistCode: CustomValidator = async (value: string) => {
 
 const isConfirmedEmail: CustomValidator = async (value: string) => {
     const userService = new UserService()
-    const user = await userService.findByEmail(value)
+    const user = await userService.getUserByParam(value)
     if (user?.isConfirmed) {
         throw new Error()
     }
@@ -100,7 +100,7 @@ const isConfirmedEmail: CustomValidator = async (value: string) => {
 
 const isExistLogin: CustomValidator = async (value: string) => {
     const userService = new UserService()
-    const user = await userService.findByLogin(value)
+    const user = await userService.getUserByParam(value)
     if (user) throw new Error()
     return true
 }

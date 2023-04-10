@@ -1,5 +1,6 @@
 import {Router} from "express";
 import {authMiddleware} from "../middleware/auth";
+import {rateLimitGuard} from "../middleware/rate-limit";
 import {isErrorMiddleware} from "../middleware/catch-error";
 import {BlogController} from "../controllers/blog-controller";
 import {PostController} from "../controllers/post-controller";
@@ -16,7 +17,7 @@ import {
     userValidation
 } from "../validator/validator";
 import {SecurityController} from "../controllers/security-controller";
-import {rateLimitGuard} from "../middleware/rate-limit";
+
 
 export const router = Router();
 

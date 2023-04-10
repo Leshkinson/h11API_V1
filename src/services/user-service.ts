@@ -32,26 +32,12 @@ export class UserService {
     public async create(login: string, password: string, email: string): Promise<IUser> {
         const hashPassword = await bcrypt.hash(password, 5);
 
-         const a = await this.userRepository.createUser(login, hashPassword, email)
-        console.log('user a service', a)
-        return a
+        return await this.userRepository.createUser(login, hashPassword, email)
     }
 
-    public async findByEmail(email: string): Promise<IUser | null> {
-        return this.userRepository.findUserByEmail(email)
+    public async getUserByParam(param: string): Promise<IUser | null> {
+        return await this.userRepository.findUserByParam(param)
     }
-
-    public async findByLogin(login: string): Promise<IUser | null> {
-        return this.userRepository.findUserByLogin(login)
-    }
-
-    public async findByCode(code: string): Promise<IUser | null> {
-        return await this.userRepository.findUserByCode(code)
-    }
-
-    // public async findBy(param: string): Promise<IUser | null> {
-    //     return await this.userRepository.findUserByParam(param)
-    // }
 
     public async createByRegistration(login: string, password: string, email: string): Promise<IUser | null> {
         const hashPassword = await bcrypt.hash(password, 5);
@@ -72,7 +58,7 @@ export class UserService {
     }
 
     public async confirmUser(code: string): Promise<boolean | null| IUser> {
-        const user = await this.userRepository.findUserByCode(code);
+        const user = await this.getUserByParam(code);
         if (!user) return false;
         if (new Date(user.expirationDate).getTime() > new Date().getTime()) {
             return await this.userRepository.updateUserByConfirmed((user._id).toString())
@@ -84,14 +70,14 @@ export class UserService {
 
     public async confirmNewPassword(newPassword: string, recoveryCode: string): Promise<boolean | null| IUser> {
         const hashNewPassword = await bcrypt.hash(newPassword, 5);
-        const user = await this.userRepository.findUserByCode(recoveryCode);
+        const user = await this.getUserByParam(recoveryCode);
         if (!user) return false;
         return await this.userRepository.updateUserByNewPassword((user._id).toString(), hashNewPassword);
     }
 
     public async resendConfirmByUser(email: string): Promise<void> {
         const mailService = new MailService();
-        const user = await this.userRepository.findUserByEmail(email);
+        const user = await this.getUserByParam(email);
         if (user) {
             const code = uuidv4();
             await this.userRepository.updateUserByCode((user._id).toString(), code);
@@ -101,7 +87,7 @@ export class UserService {
 
     public async requestByRecovery (email: string) {
         const mailService = new MailService()
-        const user = await this.userRepository.findUserByEmail(email)
+        const user = await this.getUserByParam(email)
         if(user && user.isConfirmed) {
             const recoveryCode = uuidv4();
             await this.userRepository.updateUserByCode((user._id).toString(), recoveryCode);
@@ -109,7 +95,13 @@ export class UserService {
         }
     }
 
+    public async verifyUser(loginOrEmail: string, password: string): Promise<IUser> {
+        const consideredUser = await this.getUserByParam(loginOrEmail);
+        if (!consideredUser) throw new Error();
+        if (await bcrypt.compare(password, consideredUser.password)) return consideredUser;
 
+        throw new Error();
+    }
 
     public async delete(id: RefType): Promise<IUser> {
         const deleteUser = await this.userRepository.deleteUser(id);
@@ -119,13 +111,5 @@ export class UserService {
 
     public async testingDelete(): Promise<void> {
         await this.userRepository.deleteAll();
-    }
-
-    public async verifyUser(loginOrEmail: string, password: string): Promise<IUser> {
-        const consideredUser = await this.userRepository.findUser(loginOrEmail);
-        if (!consideredUser) throw new Error();
-        if (await bcrypt.compare(password, consideredUser.password)) return consideredUser;
-
-        throw new Error();
     }
 }

@@ -22,25 +22,12 @@ export class UsersRepository {
         return this.userModel.find({$or: [searchLoginTerm, searchEmailTerm]}).sort({[sortBy]: sortDirection}).skip(skip).limit(limit);
     }
 
-    public async findUser(loginOrEmail: string): Promise<IUser | null> {
-        return this.userModel.findOne({$or: [{"login": loginOrEmail}, {"email": loginOrEmail}]})
+    public async findUserById(id: string | JwtPayload): Promise<IUser | null> {
+        return this.userModel.findById({_id: id})
     }
 
-    // public async findUserByParam(param: string): Promise<IUser | null> {
-    //     return this.userModel.findOne({param})
-    // }
-
-    public async findUserByCode(code: string): Promise<IUser | null> {
-        return this.userModel.findOne({"code": code})
-    }
-
-    public async findUserByEmail(email: string): Promise<IUser | null> {
-
-        return this.userModel.findOne({"email": email})
-    }
-
-    public async findUserByLogin(login: string): Promise<IUser | null> {
-        return this.userModel.findOne({"login": login})
+    public async findUserByParam(param: string): Promise<IUser | null> {
+        return this.userModel.findOne({$or:[{"login": param}, {"email": param}, {"code": param}]})
     }
 
     public async updateUserByConfirmed(id: string): Promise<IUser | null> {
@@ -59,10 +46,6 @@ export class UsersRepository {
         return this.userModel.findOneAndUpdate({_id: id}, {
             code: code
         })
-    }
-
-    public async findUserById(id: string | JwtPayload): Promise<IUser | null> {
-        return this.userModel.findById({_id: id})
     }
 
     public async getUsersCount(searchLoginTerm: { login: { $regex: RegExp } } | {} = {}, searchEmailTerm: { email: { $regex: RegExp } } | {} = {}): Promise<number> {

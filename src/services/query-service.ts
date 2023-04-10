@@ -44,10 +44,6 @@ export class QueryService {
         return await this.userRepository.findUserById(id);
     }
 
-    public async findUserByEmail(email: string): Promise<IUser | undefined | null> {
-        return await this.userRepository.findUserByEmail(email)
-    }
-
     public async getTotalCountForBlogs(searchNameTerm: string | undefined | object): Promise<number> {
         if (searchNameTerm)
             searchNameTerm = {name: {$regex: new RegExp(`.*${searchNameTerm}.*`, 'i')}};

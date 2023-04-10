@@ -44,8 +44,8 @@ export class AuthController {
     static async logout(req: Request, res: Response) {
         try {
             const tokenService = new TokenService();
-            const queryService = new QueryService();
             const sessionService = new SessionService();
+            const userService = new UserService();
 
             const {refreshToken} = req.cookies;
             if (!refreshToken) throw new Error;
@@ -53,7 +53,7 @@ export class AuthController {
             if (isBlockedToken) throw new Error;
             const payload = await tokenService.getPayloadByRefreshToken(refreshToken) as JWT;
             if (!payload) throw new Error;
-            const user = await queryService.findUserByEmail(payload.email);
+            const user = await userService.getUserByParam(payload.email);
             if (user) {
                 await tokenService.addTokenToBlackList(refreshToken)
                 await sessionService.deleteTheSession(String(user._id), payload.deviceId)
@@ -71,8 +71,8 @@ export class AuthController {
     static async updatePairTokens(req: Request, res: Response) {
         try {
             const tokenService = new TokenService();
-            const queryService = new QueryService();
             const sessionService = new SessionService();
+            const userService = new UserService();
 
             const {refreshToken} = req.cookies
             if (!refreshToken) throw new Error;
@@ -80,7 +80,7 @@ export class AuthController {
             if (isBlockedToken) throw new Error;
             const payload = await tokenService.getPayloadByRefreshToken(refreshToken) as JWT
             if (!payload) throw new Error
-            const user = await queryService.findUserByEmail(payload.email)
+            const user = await userService.getUserByParam(payload.email);
             if (user) {
                 await tokenService.addTokenToBlackList(refreshToken)
                 const updateSessionDevice = await sessionService.updateSession(payload.deviceId) as IDevice
@@ -108,6 +108,7 @@ export class AuthController {
         try {
             const tokenService = new TokenService();
             const queryService = new QueryService();
+
             const token: string | undefined = req.headers.authorization?.split(' ')[1];
             if (token) {
                 const payload = await tokenService.getPayloadByAccessToken(token) as JWT

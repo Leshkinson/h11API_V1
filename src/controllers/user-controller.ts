@@ -36,7 +36,6 @@ export class UserController {
 
             const {login, password, email} = req.body;
             const newUser: IUser = await userService.create(login, password, email);
-            console.log('newUser controller', newUser)
 
             res.status(201).json(newUser);
         } catch (error) {
