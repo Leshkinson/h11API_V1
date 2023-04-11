@@ -64,6 +64,13 @@ const isNotExistByParamAndConfirm: CustomValidator= async (value: string) => {
     if (!user) {
         throw new Error()
     }
+
+    return true;
+}
+
+const isConfirmedEmail: CustomValidator = async (value: string) => {
+    const userService = new UserService()
+    const user = await userService.getUserByParam(value)
     if (user?.isConfirmed) {
         throw new Error()
     }
@@ -165,7 +172,7 @@ export const emailValidation = body('email')
     .withMessage("Email has incorrect value. (Email doesn't match pattern)")
     .custom(isExistByParam)
     .withMessage("Email is exist. (This email already exists enter another email)")
-    .custom(isNotExistByParamAndConfirm)
+    .custom(isConfirmedEmail)
     .withMessage("Email is confirmed. (This email already confirmed)")
 
 
