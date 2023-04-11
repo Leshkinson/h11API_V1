@@ -18,6 +18,7 @@ export class AuthController {
             const user = await userService.verifyUser(loginOrEmail, password);
 
             if (user && user.isConfirmed) {
+
                 const sessionDevice = await sessionService.generateSession(req.ip, req.headers["user-agent"], String(user._id))
                 const accessToken = tokenService.generateAccessToken(TokenMapper.prepareAccessModel(user));
                 const refreshToken = tokenService.generateRefreshToken(TokenMapper.prepareRefreshModel(user, sessionDevice));
@@ -52,7 +53,7 @@ export class AuthController {
             const payload = await tokenService.getPayloadFromToken(refreshToken);
             const user = await userService.getUserByParam(payload.email);
             if (user) {
-                await tokenService.addTokenToBlackList(refreshToken)
+                //await tokenService.addTokenToBlackList(refreshToken)
                 await sessionService.deleteTheSession(String(user._id), payload.deviceId)
                 res.clearCookie('refreshToken');
                 res.sendStatus(204);
@@ -76,7 +77,7 @@ export class AuthController {
             const payload = await tokenService.getPayloadFromToken(refreshToken);
             const user = await userService.getUserByParam(payload.email);
             if (user) {
-                await tokenService.addTokenToBlackList(refreshToken);
+                //await tokenService.addTokenToBlackList(refreshToken);
                 const updateSessionDevice = await sessionService.updateSession(payload.deviceId) as IDevice
                 const newAccessToken = tokenService.generateAccessToken(TokenMapper.prepareAccessModel(user))
                 const newRefreshToken = tokenService.generateRefreshToken(TokenMapper.prepareRefreshModel(user, updateSessionDevice))

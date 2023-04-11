@@ -1,6 +1,7 @@
 import {IToken} from "../ts/interfaces";
 import {TokenRepository} from "../repositories/token-repository";
 import jwt, {JwtPayload, Secret, SignOptions} from "jsonwebtoken";
+import {SessionService} from "../services/session-service";
 
 const settings = {
     JWT_ACCESS_SECRET: "superpupersecret",
@@ -64,9 +65,15 @@ export class TokenService {
     }
 
     public async checkTokenByBlackList(token: string): Promise<boolean> {
-        const checkToken = await this.tokenRepository.findToken(token)
-        return !!checkToken;
+        const {iat, deviceId} = jwt.decode(token) as JwtPayload
+        const sessionService = new SessionService();
+        const session = await sessionService.findSession(deviceId);
+        return iat !== session?.lastActiveDate;
+
+        // const checkToken = await this.tokenRepository.findToken(token)
+        // return !!checkToken;
     }
+
 //TODO finish refactor
     public async getPayloadFromToken(refreshToken: string) {
         if (!refreshToken) throw new Error;
