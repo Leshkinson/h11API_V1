@@ -8,11 +8,6 @@ const settings = {
     TOKEN_ACCESS_LIVE_TIME: {expiresIn: "10s"},
     TOKEN_REFRESH_LIVE_TIME: {expiresIn: "100s"},
 }
-//вот сижу пробую твою клавиатуру
-//есть задержка после переключения языка на клавиатуре
-//а ты умеешь в слепую печать???
-//эту строчку я написал почти полностью в слепую!
-//но в целом прикольно
 
 export interface JWT extends JwtPayload {
     id: string;
