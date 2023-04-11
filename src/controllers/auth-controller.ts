@@ -73,11 +73,9 @@ export class AuthController {
             const userService = new UserService();
 
             const {refreshToken} = req.cookies;
-//TODO finish refactor
             const payload = await tokenService.getPayloadFromToken(refreshToken);
             const user = await userService.getUserByParam(payload.email);
             if (user) {
-                //await tokenService.addTokenToBlackList(refreshToken);
                 const updateSessionDevice = await sessionService.updateSession(payload.deviceId) as IDevice
                 const newAccessToken = tokenService.generateAccessToken(TokenMapper.prepareAccessModel(user))
                 const newRefreshToken = tokenService.generateRefreshToken(TokenMapper.prepareRefreshModel(user, updateSessionDevice))

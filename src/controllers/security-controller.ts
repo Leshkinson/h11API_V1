@@ -11,15 +11,10 @@ export class SecurityController {
             const sessionService = new SessionService();
 
             const {refreshToken} = req.cookies;
-            console.log('refreshToken', refreshToken)
-            console.log('here')
             const payload = await tokenService.getPayloadFromToken(refreshToken);
-            console.log('payload', payload)
             const user = await userService.getUserByParam(payload.email);
-            console.log('user', user)
             if (user) {
                 const sessions = await sessionService.getAllSessionByUser(String(user._id));
-                console.log('session', sessions)
                 res.status(200).json(sessions);
             }
         } catch (error) {

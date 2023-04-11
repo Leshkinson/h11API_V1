@@ -66,29 +66,16 @@ export class TokenService {
 
     public async checkTokenByBlackList(token: string): Promise<boolean> {
         const {iat, deviceId} = jwt.decode(token) as JwtPayload
-        console.log('iat', iat)
-        console.log('deviceId', deviceId)
         const sessionService = new SessionService();
         const session = await sessionService.findSession(deviceId);
-        console.log('session', session)
-        console.log('check', iat === session?.lastActiveDate)
         return iat === session?.lastActiveDate;
-
-
-
-        // const checkToken = await this.tokenRepository.findToken(token)
-        // return !!checkToken;
     }
 
-//TODO finish refactor
     public async getPayloadFromToken(refreshToken: string) {
         if (!refreshToken) throw new Error;
-        console.log("ref", refreshToken)
         const isBlockedToken = await this.checkTokenByBlackList(refreshToken);
-        console.log('isBlockedToken', isBlockedToken)
         if (isBlockedToken) throw new Error;
         const payload = await this.getPayloadByRefreshToken(refreshToken);
-        console.log('payload by service', payload)
         if (!payload) {
             throw new Error
 
