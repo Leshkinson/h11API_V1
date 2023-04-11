@@ -35,11 +35,6 @@ export interface IComment {
     }
 }
 
-export interface IToken {
-    _id: mongoose.Schema.Types.ObjectId;
-    token: string
-}
-
 export interface IDevice {
     _id: mongoose.Schema.Types.ObjectId;
     ip: string,

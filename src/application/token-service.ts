@@ -1,5 +1,4 @@
-import {IToken} from "../ts/interfaces";
-import {TokenRepository} from "../repositories/token-repository";
+
 import jwt, {JwtPayload, Secret, SignOptions} from "jsonwebtoken";
 import {SessionService} from "../services/session-service";
 
@@ -9,6 +8,11 @@ const settings = {
     TOKEN_ACCESS_LIVE_TIME: {expiresIn: "10s"},
     TOKEN_REFRESH_LIVE_TIME: {expiresIn: "100s"},
 }
+//вот сижу пробую твою клавиатуру
+//есть задержка после переключения языка на клавиатуре
+//а ты умеешь в слепую печать???
+//эту строчку я написал почти полностью в слепую!
+//но в целом прикольно
 
 export interface JWT extends JwtPayload {
     id: string;
@@ -17,7 +21,6 @@ export interface JWT extends JwtPayload {
 }
 
 export class TokenService {
-    private tokenRepository: TokenRepository
     private readonly secretAccess: Secret;
     private readonly optionsAccess: SignOptions;
     private readonly secretRefresh: Secret;
@@ -25,7 +28,6 @@ export class TokenService {
 
 
     constructor() {
-        this.tokenRepository = new TokenRepository();
         this.optionsAccess = settings.TOKEN_ACCESS_LIVE_TIME;
         this.secretAccess = settings.JWT_ACCESS_SECRET;
         this.optionsRefresh = settings.TOKEN_REFRESH_LIVE_TIME;
@@ -58,10 +60,6 @@ export class TokenService {
             return false
         }
         return jwt.verify(token, settings.JWT_REFRESH_SECRET)
-    }
-
-    public async addTokenToBlackList(token: string): Promise<IToken> {
-        return await this.tokenRepository.createToken(token)
     }
 
     public async checkTokenByBlackList(token: string): Promise<boolean> {
