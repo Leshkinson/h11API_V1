@@ -48,3 +48,9 @@ export interface UserInvitation {
     to: string,
     html: string
 }
+
+export interface ILikeStatus {
+    _id: mongoose.Schema.Types.ObjectId;
+    likeStatus: string;
+    userId: string
+}

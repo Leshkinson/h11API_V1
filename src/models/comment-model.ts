@@ -8,8 +8,13 @@ export const CommentSchema = new Schema({
     commentatorInfo: {
         userId: {type: "string", required: true},
         userLogin: {type: "string", required: true}
+    },
+    likesInfo: {
+        likeCount: {type: "number"},
+        dislikeCount: {type: "number"},
+        myStatus: {type: "string"}
     }
-}, {timestamps: true})
+}, {timestamps: true});
 
 CommentSchema.set('toJSON', {
     transform: function (doc, dto) {

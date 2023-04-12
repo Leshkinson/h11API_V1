@@ -2,6 +2,7 @@ import jwt, {JwtPayload} from "jsonwebtoken";
 import {QueryService} from "../services/query-service";
 import {Request, Response, NextFunction} from "express";
 import {JWT, TokenService} from "../application/token-service";
+import {UserService} from "../services/user-service";
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     if (!req.headers.authorization) {
@@ -24,15 +25,15 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
         return;
     }
-    const tokenService = new TokenService()
-    const queryService = new QueryService()
+    const tokenService = new TokenService();
+    const userService = new UserService();
     const payload: string | JwtPayload | JWT = await tokenService.getPayloadByAccessToken(token) as JWT
     if (!payload) {
         res.sendStatus(401)
 
         return;
     }
-    const user = await queryService.findUser(payload.id)
+    const user = await userService.getUserById(payload.id)
 
     if (!user) {
         res.sendStatus(401)

@@ -16,9 +16,7 @@ export class AuthController {
 
             const {loginOrEmail, password} = req.body;
             const user = await userService.verifyUser(loginOrEmail, password);
-
             if (user && user.isConfirmed) {
-
                 const sessionDevice = await sessionService.generateSession(req.ip, req.headers["user-agent"], String(user._id))
                 const accessToken = tokenService.generateAccessToken(TokenMapper.prepareAccessModel(user));
                 const refreshToken = tokenService.generateRefreshToken(TokenMapper.prepareRefreshModel(user, sessionDevice));
@@ -49,11 +47,9 @@ export class AuthController {
             const userService = new UserService();
 
             const {refreshToken} = req.cookies;
-//TODO finish refactor
             const payload = await tokenService.getPayloadFromToken(refreshToken);
             const user = await userService.getUserByParam(payload.email);
             if (user) {
-                //await tokenService.addTokenToBlackList(refreshToken)
                 await sessionService.deleteTheSession(String(user._id), payload.deviceId)
                 res.clearCookie('refreshToken');
                 res.sendStatus(204);
@@ -100,12 +96,12 @@ export class AuthController {
     static async me(req: Request, res: Response) {
         try {
             const tokenService = new TokenService();
-            const queryService = new QueryService();
+            const userService = new UserService();
 
             const token: string | undefined = req.headers.authorization?.split(' ')[1];
             if (token) {
                 const payload = await tokenService.getPayloadByAccessToken(token) as JWT
-                const user = await queryService.findUser(payload.id)
+                const user = await userService.getUserById(payload.id)
                 res.status(200).json({
                     "email": user?.email,
                     "login": user?.login,

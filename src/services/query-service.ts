@@ -4,44 +4,35 @@ import {PostModel} from "../models/post-model";
 import {UserModel} from "../models/user-model";
 import {CommentModel} from "../models/comment-model";
 import mongoose, {Model, RefType, SortOrder} from "mongoose";
-import {IBlog, IComment, IPost, IUser} from "../ts/interfaces";
 import {JWT, TokenService} from "../application/token-service";
 import {BlogsRepository} from "../repositories/blogs-repository";
 import {PostsRepository} from "../repositories/posts-repository";
 import {UsersRepository} from "../repositories/users-repository";
 import {CommentsRepository} from "../repositories/comments-repository";
+import {IBlog, IComment, ILikeStatus, IPost, IUser} from "../ts/interfaces";
+import {LikeRepository} from "../repositories/like-repository";
 
 export class QueryService {
     private blogRepository: BlogsRepository;
     private postRepository: PostsRepository;
     private userRepository: UsersRepository;
+    private likeRepository: LikeRepository;
+    private commentRepository: CommentsRepository;
     private postModel: Model<IPost>;
     private blogModel: Model<IBlog>;
     private userModel: Model<IUser>;
-    private commentModel: Model<IComment>
+    private commentModel: Model<IComment>;
 
     constructor() {
         this.blogRepository = new BlogsRepository();
         this.postRepository = new PostsRepository();
         this.userRepository = new UsersRepository();
+        this.likeRepository = new LikeRepository();
+        this.commentRepository = new CommentsRepository();
         this.postModel = PostModel;
         this.blogModel = BlogModel;
         this.userModel = UserModel;
         this.commentModel = CommentModel;
-    }
-
-    public async findBlog(blogId: RefType): Promise<IBlog | undefined | null> {
-
-        return await this.blogRepository.getOneBlog(blogId);
-    }
-
-    public async findPost(postId: RefType): Promise<IPost | undefined | null> {
-
-        return await this.postRepository.getOnePost(postId)
-    }
-
-    public async findUser(id: string | JwtPayload): Promise<IUser | undefined | null> {
-        return await this.userRepository.findUserById(id);
     }
 
     public async getTotalCountForBlogs(searchNameTerm: string | undefined | object): Promise<number> {
@@ -66,7 +57,7 @@ export class QueryService {
     }
 
     public async getTotalCountPostsForTheBlog(blogId: RefType): Promise<number> {
-        const blog = await this.findBlog(blogId);
+        const blog = await this.blogRepository.getOneBlog(blogId);
 
         return this.postModel.find({blogId: (blog?._id)?.toString()}).count();
     }
@@ -76,7 +67,7 @@ export class QueryService {
         title: string,
         shortDescription: string,
         content: string): Promise<IPost> {
-        const blog = await this.findBlog(blogId);
+        const blog = await this.blogRepository.getOneBlog(blogId);
         if (blog) {
             const blogId = new mongoose.Types.ObjectId((blog?._id).toString());
 
@@ -91,7 +82,7 @@ export class QueryService {
         pageSize: number = 10,
         sortBy: string = 'createdAt',
         sortDirection: SortOrder = 'desc'): Promise<IPost[]> {
-        const blog = await this.findBlog(blogId);
+        const blog = await this.blogRepository.getOneBlog(blogId);
         const skip: number = (+pageNumber - 1) * +pageSize;
         if (blog) {
             return this.postModel.find({blogId: (blog?._id)?.toString()}).sort({[sortBy]: sortDirection}).skip(skip).limit(+pageSize);
@@ -101,12 +92,11 @@ export class QueryService {
 
     public async createCommentForThePost(postId: RefType, content: string, token: string): Promise<IComment> {
         const tokenService = new TokenService();
-        const queryService = new QueryService();
         const commentRepository = new CommentsRepository()
-        const post = await this.findPost(postId)
+        const post = await this.postRepository.getOnePost(postId);
         if (post) {
             const payload = await tokenService.getPayloadByAccessToken(token) as JWT
-            const user = await queryService.findUser(payload.id)
+            const user = await this.userRepository.findUserById(payload.id)
             if (user) {
                 return await commentRepository.createComment(content, postId, payload.id, user.login)
             }
@@ -122,7 +112,7 @@ export class QueryService {
         sortBy: string = 'createdAt',
         sortDirection: SortOrder = 'desc'): Promise<IComment[]> {
 
-        const post = await this.findPost(postId);
+        const post = await this.postRepository.getOnePost(postId);
         const skip: number = (+pageNumber - 1) * +pageSize;
         if (post) {
             return this.commentModel.find({postId: (post?._id)?.toString()}).sort({[sortBy]: sortDirection}).skip(skip).limit(+pageSize)
@@ -131,8 +121,40 @@ export class QueryService {
     }
 
     public async getTotalCountCommentsForThePost(postId: RefType): Promise<number> {
-        const post = await this.findPost(postId);
+        const post = await this.postRepository.getOnePost(postId);
 
         return this.commentModel.find({postId: (post?._id)?.toString()}).count();
+    }
+
+    public async makeLikeStatusForTheComment(likeStatus: string, commentId: string, userId: string): Promise<ILikeStatus | null> {
+        const like = await this.likeRepository.findLike(userId);
+        // switch (like?.likeStatus) {
+        //     case "None":
+        //         await this.changeLikeStatusForTheComment(String(like?._id), likeStatus)
+        //         break;
+        //     case "Like":
+        //         await this.changeLikeStatusForTheComment(String(like?._id), likeStatus)
+        //         break;
+        //     case "Dislike":
+        //         break;
+        //     default:
+        // }
+        if (like) {
+            return await this.changeLikeStatusForTheComment(String(like?._id), likeStatus);
+        }
+
+        return await this.likeRepository.createLike(commentId, userId, likeStatus);
+
+    }
+
+    public async changeLikeStatusForTheComment(likeId: string, likeStatus: string): Promise<ILikeStatus | null> {
+        return await this.likeRepository.updateLikeStatus(likeId, likeStatus)
+    }
+
+    public async getTotalCountLikeOrDislike(commentId: string, param: string) {
+        const comment = await this.commentRepository.getOneComment(commentId)
+        if(comment) [
+
+        ]
     }
 }

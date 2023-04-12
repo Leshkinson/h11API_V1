@@ -5,8 +5,8 @@ import {SessionService} from "../services/session-service";
 const settings = {
     JWT_ACCESS_SECRET: "superpupersecret",
     JWT_REFRESH_SECRET: "superpupermegasecret",
-    TOKEN_ACCESS_LIVE_TIME: {expiresIn: "10s"},
-    TOKEN_REFRESH_LIVE_TIME: {expiresIn: "100s"},
+    TOKEN_ACCESS_LIVE_TIME: {expiresIn: "10m"},
+    TOKEN_REFRESH_LIVE_TIME: {expiresIn: "100m"},
 }
 
 export interface JWT extends JwtPayload {
@@ -64,15 +64,14 @@ export class TokenService {
         return iat === session?.lastActiveDate;
     }
 
-    public async getPayloadFromToken(refreshToken: string) {
+    public async getPayloadFromToken(refreshToken: string): Promise<JWT> {
         if (!refreshToken) throw new Error;
         const isBlockedToken = await this.checkTokenByBlackList(refreshToken);
         if (isBlockedToken) throw new Error;
-        const payload = await this.getPayloadByRefreshToken(refreshToken);
-        if (!payload) {
+        const payload = await this.getPayloadByRefreshToken(refreshToken) as JWT;
+        if (!payload)
             throw new Error
 
-        }
-        return payload as JWT
+        return payload
     }
 }

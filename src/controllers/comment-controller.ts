@@ -3,6 +3,7 @@ import {IComment} from "../ts/interfaces";
 import {QueryService} from "../services/query-service";
 import {CommentService} from "../services/comment-service";
 import {JWT, TokenService} from "../application/token-service";
+import {UserService} from "../services/user-service";
 
 export class CommentController {
 
@@ -10,13 +11,14 @@ export class CommentController {
         try {
             const commentService = new CommentService();
             const tokenService = new TokenService();
-            const queryService = new QueryService();
+            const userService = new UserService();
+
             const {commentId} = req.params;
             const {content} = req.body;
             const token = req.headers.authorization?.split(' ')[1]
             if (token) {
                 const payload = await tokenService.getPayloadByAccessToken(token) as JWT
-                const user = await queryService.findUser(payload.id);
+                const user = await userService.getUserById(payload.id);
                 const comment: IComment | undefined = await commentService.getOne(commentId);
                 if (!user || !comment) {
                     res.sendStatus(404)
@@ -49,12 +51,13 @@ export class CommentController {
         try {
             const commentService = new CommentService()
             const tokenService = new TokenService();
-            const queryService = new QueryService();
+            const userService = new UserService();
+
             const {id} = req.params;
             const token = req.headers.authorization?.split(' ')[1]
             if (token) {
                 const payload = await tokenService.getPayloadByAccessToken(token) as JWT
-                const user = await queryService.findUser(payload.id);
+                const user = await userService.getUserById(payload.id);
 
                 if (!user) {
                     res.sendStatus(404)
@@ -67,12 +70,7 @@ export class CommentController {
                     res.sendStatus(404)
                     return
                 }
-                console.log('comment?.commentatorInfo.userLogin', comment?.commentatorInfo.userLogin)
-                console.log('user?.login', user?.login)
-                console.log('comment?.commentatorInfo.userLogin', comment?.commentatorInfo.userLogin)
-                console.log('user?.email', user?.email)
                 if (comment?.commentatorInfo.userLogin !== user?.login ) {
-                    console.log('Here3')
                     res.sendStatus(403)
                     return
                 }
@@ -115,4 +113,32 @@ export class CommentController {
             }
         }
     }
+
+    static async sendLikeOrDislikeStatusForTheComment(req: Request, res: Response) {
+        try {
+            const commentService = new CommentService();
+            const tokenService = new TokenService();
+            const userService = new UserService();
+
+            const {commentId} = req.params;
+            const {likeStatus} = req.body;
+            const token = req.headers.authorization?.split(' ')[1];
+            if (token) {
+                const payload = await tokenService.getPayloadByAccessToken(token) as JWT
+                const user = await userService.getUserById(payload.id);
+                const comment: IComment | undefined = await commentService.getOne(commentId);
+                if (!user || !comment) {
+                    res.sendStatus(404)
+
+                    return
+                }
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                res.sendStatus(404);
+                console.log(error.message);
+            }
+        }
+    }
+
 }

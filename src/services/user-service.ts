@@ -5,6 +5,7 @@ import {RefType, SortOrder} from "mongoose";
 import {MailService} from "../application/mail-service";
 import {UsersRepository} from "../repositories/users-repository";
 import {passwordConfirmedTemplate, userInvitationTemplate} from "../templates/mail-templates/user-invitation";
+import {JwtPayload} from "jsonwebtoken";
 
 export class UserService {
     private userRepository: UsersRepository;
@@ -37,6 +38,10 @@ export class UserService {
 
     public async getUserByParam(param: string): Promise<IUser | null> {
         return await this.userRepository.findUserByParam(param)
+    }
+
+    public async getUserById(id:string | JwtPayload): Promise<IUser | null> {
+        return await this.userRepository.findUserById(id)
     }
 
     public async createByRegistration(login: string, password: string, email: string): Promise<IUser | null> {
