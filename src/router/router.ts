@@ -11,7 +11,7 @@ import {basicAuthorization} from "../authorizations/authorization";
 import {CommentController} from "../controllers/comment-controller";
 import {
     blogValidation, codeConfirmed,
-    commentValidation, emailExistValidation, emailValidationByNewPassword, newPasswordValidation,
+    commentValidation, emailExistValidation, emailValidationByNewPassword, likeStatusValidation, newPasswordValidation,
     postValidation,
     postValidationWithoutBodyId, recoveryCodeConfirmed,
     userValidation
@@ -48,7 +48,7 @@ router.post('/users', basicAuthorization, userValidation, isErrorMiddleware, Use
 router.delete('/users/:id', basicAuthorization, UserController.deleteUser);
 
 /**Comments**/
-router.put('/comments/:commentId/like-status');
+router.put('/comments/:commentId/like-status', authMiddleware, likeStatusValidation, isErrorMiddleware,ceCommentController.sendLikeOrDislikeStatusForTheComment);
 router.put('/comments/:commentId', authMiddleware, commentValidation, isErrorMiddleware, CommentController.updateComment);
 router.delete('/comments/:id', authMiddleware, CommentController.deleteComment);
 router.get('/comments/:id', CommentController.getOneComment);

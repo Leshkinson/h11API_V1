@@ -9,7 +9,7 @@ export class LikeRepository {
         this.likeModel = LikeModel;
     }
 
-    public async createLike(commentId: string, userId: string, likeStatus: string): Promise<ILikeStatus>{
+    public async createLike(commentId: string, userId: string, likeStatus: string): Promise<ILikeStatus> {
         return this.likeModel.create({userId, likeStatus, commentId})
     }
 
@@ -21,5 +21,7 @@ export class LikeRepository {
         return this.likeModel.findOne({userId})
     }
 
-    public countingLikeOrDislike(param)
+    public async countingLikeOrDislike(commentId: string, param: string) {
+        return this.likeModel.find({$and: [{"commentId": commentId}, {"likeStatus": param}]}).count()
+    }
 }

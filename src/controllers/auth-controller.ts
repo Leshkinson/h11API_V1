@@ -48,6 +48,7 @@ export class AuthController {
 
             const {refreshToken} = req.cookies;
             const payload = await tokenService.getPayloadFromToken(refreshToken);
+            //todo change on search by id
             const user = await userService.getUserByParam(payload.email);
             if (user) {
                 await sessionService.deleteTheSession(String(user._id), payload.deviceId)

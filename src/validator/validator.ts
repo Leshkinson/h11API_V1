@@ -1,6 +1,8 @@
 import {BlogService} from "../services/blog-service";
 import {UserService} from "../services/user-service";
 import {body, validationResult, CustomValidator} from 'express-validator';
+import {LikesStatusType} from "../ts/types";
+import {LikesStatus} from "../const/const";
 
 export const myValidationResult = validationResult.withDefaults({
     formatter: error => {
@@ -72,6 +74,14 @@ const isConfirmedEmail: CustomValidator = async (value: string) => {
     const userService = new UserService()
     const user = await userService.getUserByParam(value)
     if (user?.isConfirmed) {
+        throw new Error()
+    }
+
+    return true;
+}
+
+const isLikeStatusCheck: CustomValidator = async (value: string) => {
+    if (!LikesStatus.hasOwnProperty(value)) {
         throw new Error()
     }
 
@@ -225,6 +235,13 @@ export const recoveryCodeConfirmed = body('recoveryCode')
     .withMessage("Code has incorrect value. (Email doesn't string)")
     .custom(isNotExistByParamAndConfirm)
     .withMessage("Code is not exist. (This Code not exists)")
+
+export const likeStatusValidation = body('likeStatus')
+    .trim()
+    .isString()
+    .withMessage("LikeStatus has incorrect value. (LikeStatus doesn't string)")
+    .custom(isLikeStatusCheck)
+    .withMessage("LikeStatus does not match type. (LikeStatus have wrong type)")
 
 
 

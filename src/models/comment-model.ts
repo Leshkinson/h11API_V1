@@ -9,11 +9,11 @@ export const CommentSchema = new Schema({
         userId: {type: "string", required: true},
         userLogin: {type: "string", required: true}
     },
-    likesInfo: {
-        likeCount: {type: "number"},
-        dislikeCount: {type: "number"},
-        myStatus: {type: "string"}
-    }
+    // likesInfo: {
+    //     likeCount: {type: "number"},
+    //     dislikeCount: {type: "number"},
+    //     myStatus: {type: "string"}
+    // }
 }, {timestamps: true});
 
 CommentSchema.set('toJSON', {

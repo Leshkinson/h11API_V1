@@ -25,7 +25,7 @@ export class CommentController {
 
                     return
                 }
-                if (comment?.commentatorInfo.userLogin !== user?.login ) {
+                if (comment?.commentatorInfo.userLogin !== user?.login) {
                     res.sendStatus(403)
 
                     return
@@ -70,7 +70,7 @@ export class CommentController {
                     res.sendStatus(404)
                     return
                 }
-                if (comment?.commentatorInfo.userLogin !== user?.login ) {
+                if (comment?.commentatorInfo.userLogin !== user?.login) {
                     res.sendStatus(403)
                     return
                 }
@@ -86,10 +86,6 @@ export class CommentController {
                 res.sendStatus(204);
             }
         } catch (error) {
-            // if (error instanceof CustomError){
-            //     res.sendStatus(error.code);
-            //     console.log('CustomError', error.code);
-            // } else
             if (error instanceof Error) {
                 res.sendStatus(404);
                 console.log(error.message);
@@ -99,13 +95,26 @@ export class CommentController {
 
     static async getOneComment(req: Request, res: Response) {
         try {
-            const commentService = new CommentService()
+            const userService = new UserService();
+            const tokenService = new TokenService();
+            const queryService = new QueryService();
+            const commentService = new CommentService();
 
             const {id} = req.params;
-            const findComment: IComment | undefined = await commentService.getOne(id)
-
-            res.status(200).json(findComment)
-
+            const {refreshToken} = req.cookies;
+            const findComment: IComment | undefined = await commentService.getOne(id);
+            const payload = await tokenService.getPayloadFromToken(refreshToken);
+            const user = await userService.getUserByParam(payload.email);
+            if (user) {
+                res.status(200).json({
+                    ...findComment,
+                    "likesInfo": {
+                        "likesCount":await queryService. getTotalCountLikeOrDislike(id, 'like'),
+                        "dislikesCount": await queryService. getTotalCountLikeOrDislike(id, 'dislike'),
+                        "myStatus": await queryService.getLikeStatus(String(user._id))
+                    }
+                })
+            }
         } catch (error) {
             if (error instanceof Error) {
                 res.sendStatus(404);
@@ -116,9 +125,10 @@ export class CommentController {
 
     static async sendLikeOrDislikeStatusForTheComment(req: Request, res: Response) {
         try {
-            const commentService = new CommentService();
-            const tokenService = new TokenService();
             const userService = new UserService();
+            const tokenService = new TokenService();
+            const queryService = new QueryService();
+            const commentService = new CommentService();
 
             const {commentId} = req.params;
             const {likeStatus} = req.body;
@@ -132,6 +142,8 @@ export class CommentController {
 
                     return
                 }
+                await queryService.makeLikeStatusForTheComment(likeStatus, commentId, String(user._id));
+                res.sendStatus(204);
             }
         } catch (error) {
             if (error instanceof Error) {

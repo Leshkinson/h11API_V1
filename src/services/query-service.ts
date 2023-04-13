@@ -144,7 +144,6 @@ export class QueryService {
         }
 
         return await this.likeRepository.createLike(commentId, userId, likeStatus);
-
     }
 
     public async changeLikeStatusForTheComment(likeId: string, likeStatus: string): Promise<ILikeStatus | null> {
@@ -153,8 +152,16 @@ export class QueryService {
 
     public async getTotalCountLikeOrDislike(commentId: string, param: string) {
         const comment = await this.commentRepository.getOneComment(commentId)
-        if(comment) [
+        if (comment) {
+            return await this.likeRepository.countingLikeOrDislike(String(comment._id), param)
+        }
 
-        ]
+        throw new Error()
+    }
+
+    public async getLikeStatus(userId: string) {
+        const like = await this.likeRepository.findLike(userId);
+        if (like)
+            return like.likeStatus
     }
 }
