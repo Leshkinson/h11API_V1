@@ -117,6 +117,7 @@ export class CommentController {
                             dislikesCount: await queryService.getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE),
                             myStatus: await queryService.getLikeStatus(String(user._id)) as LikesStatusCfgValues
                         }
+                        console.log('likeStatusByUser', likeStatusByUser)
                         if (findComment.hasOwnProperty('likesInfo')) {
                             findComment.likesInfo = likeStatusByUser
                             console.log('findComment2', findComment)
