@@ -4,6 +4,7 @@ import {QueryService} from "../services/query-service";
 import {CommentService} from "../services/comment-service";
 import {JWT, TokenService} from "../application/token-service";
 import {UserService} from "../services/user-service";
+import {LikesStatus} from "../const/const";
 
 export class CommentController {
 
@@ -109,8 +110,8 @@ export class CommentController {
                 res.status(200).json({
                     ...findComment,
                     "likesInfo": {
-                        "likesCount":await queryService. getTotalCountLikeOrDislike(id, 'like'),
-                        "dislikesCount": await queryService. getTotalCountLikeOrDislike(id, 'dislike'),
+                        "likesCount":await queryService. getTotalCountLikeOrDislike(id, LikesStatus.LIKE),
+                        "dislikesCount": await queryService. getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE),
                         "myStatus": await queryService.getLikeStatus(String(user._id))
                     }
                 })

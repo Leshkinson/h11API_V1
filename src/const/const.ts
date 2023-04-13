@@ -1,4 +1,4 @@
-import {LikesStatusCfgValues, LikesStatusType} from "../ts/types"
+import {LikesStatusType} from "../ts/types"
 
 export const LikesStatus:  LikesStatusType = {
     LIKE: "Like",
