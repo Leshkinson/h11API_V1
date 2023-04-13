@@ -10,8 +10,8 @@ export const CommentSchema = new Schema({
         userLogin: {type: "string", required: true}
     },
     likesInfo: {
-        likeCount: {type: "number", default: 0},
-        dislikeCount: {type: "number", default: 0},
+        likesCount: {type: "number", default: 0},
+        dislikesCount: {type: "number", default: 0},
         myStatus: {type: "string", default: "None"}
     }
 }, {timestamps: true});
