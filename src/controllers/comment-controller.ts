@@ -100,7 +100,7 @@ export class CommentController {
             const tokenService = new TokenService();
             const queryService = new QueryService();
             const commentService = new CommentService();
-
+            console.log('req', req)
             const {id} = req.params;
             const {refreshToken} = req.cookies;
             console.log('refreshToken', refreshToken)
@@ -108,14 +108,10 @@ export class CommentController {
             const payload = await tokenService.getPayloadFromToken(refreshToken);
             const user = await userService.getUserByParam(payload.email);
             if (user) {
-                res.status(200).json({
-                    ...findComment,
-                    "likesInfo": {
-                        "likesCount": await queryService. getTotalCountLikeOrDislike(id, LikesStatus.LIKE),
-                        "dislikesCount": await queryService. getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE),
-                        "myStatus": await queryService.getLikeStatus(String(user._id))
-                    }
-                })
+                res.status(200).json(findComment)
+                // "likesCount": await queryService. getTotalCountLikeOrDislike(id, LikesStatus.LIKE),
+                //     "dislikesCount": await queryService. getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE),
+                //     "myStatus": await queryService.getLikeStatus(String(user._id))
             }
         } catch (error) {
             if (error instanceof Error) {
