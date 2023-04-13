@@ -107,7 +107,8 @@ export class CommentController {
             const findComment: IComment | undefined = await commentService.getOne(id);
             console.log('findComment', findComment)
             if (token) {
-                const payload = await tokenService.getPayloadFromToken(token);
+                console.log('here')
+                const payload = await tokenService.getPayloadByAccessToken(token) as JWT;
                 console.log('payload', payload)
                 const user = await userService.getUserById(payload.id);
                 if (user){
