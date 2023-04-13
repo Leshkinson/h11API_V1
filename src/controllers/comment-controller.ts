@@ -110,7 +110,7 @@ export class CommentController {
                 res.status(200).json({
                     ...findComment,
                     "likesInfo": {
-                        "likesCount":await queryService. getTotalCountLikeOrDislike(id, LikesStatus.LIKE),
+                        "likesCount": await queryService. getTotalCountLikeOrDislike(id, LikesStatus.LIKE),
                         "dislikesCount": await queryService. getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE),
                         "myStatus": await queryService.getLikeStatus(String(user._id))
                     }

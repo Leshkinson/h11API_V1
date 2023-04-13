@@ -9,11 +9,11 @@ export const CommentSchema = new Schema({
         userId: {type: "string", required: true},
         userLogin: {type: "string", required: true}
     },
-    // likesInfo: {
-    //     likeCount: {type: "number"},
-    //     dislikeCount: {type: "number"},
-    //     myStatus: {type: "string"}
-    // }
+    likesInfo: {
+        likeCount: {type: "number", default: 0},
+        dislikeCount: {type: "number", default: 0},
+        myStatus: {type: "string", default: "None"}
+    }
 }, {timestamps: true});
 
 CommentSchema.set('toJSON', {
@@ -28,4 +28,4 @@ CommentSchema.set('toJSON', {
 
 CommentSchema.set('id', true);
 
-export const CommentModel = mongoose.model<IComment>('Comment', CommentSchema)
+export const CommentModel = mongoose.model<IComment>("Comment", CommentSchema)
