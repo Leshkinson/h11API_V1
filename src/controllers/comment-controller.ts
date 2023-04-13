@@ -103,18 +103,23 @@ export class CommentController {
 
             const {id} = req.params;
             const token = req.headers.authorization?.split(' ')[1]
+            console.log('token', token)
             const findComment: IComment | undefined = await commentService.getOne(id);
+            console.log('findComment', )
             if (token) {
                 const payload = await tokenService.getPayloadFromToken(token);
+                console.log('payload', payload)
                 const user = await userService.getUserByParam(payload.email);
                 if (user){
+                    console.log('here')
                     const likeStatusByUser = {
                         likesInfo: {
-                            likesCount: await queryService. getTotalCountLikeOrDislike(id, LikesStatus.LIKE),
-                            dislikesCount: await queryService. getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE),
+                            likesCount: await queryService.getTotalCountLikeOrDislike(id, LikesStatus.LIKE),
+                            dislikesCount: await queryService.getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE),
                             myStatus: await queryService.getLikeStatus(String(user._id))
                         }
                     }
+                    console.log('res', {...findComment, ...likeStatusByUser})
                     res.status(200).json({...findComment, ...likeStatusByUser})
                     // "likesCount": await queryService. getTotalCountLikeOrDislike(id, LikesStatus.LIKE),
                     //     "dislikesCount": await queryService. getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE),
@@ -123,8 +128,8 @@ export class CommentController {
                 }
                 const likeStatusByUnauthorizedUser = {
                     likesInfo: {
-                        likesCount: await queryService. getTotalCountLikeOrDislike(id, LikesStatus.LIKE),
-                        dislikesCount: await queryService. getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE),
+                        likesCount: await queryService.getTotalCountLikeOrDislike(id, LikesStatus.LIKE),
+                        dislikesCount: await queryService.getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE),
                         // myStatus: await queryService.getLikeStatus(String(user._id))
                     }
                 }
