@@ -111,7 +111,7 @@ export class CommentController {
                 const payload = await tokenService.getPayloadByAccessToken(token) as JWT;
                 console.log('payload', payload)
                 const user = await userService.getUserById(payload.id);
-                if (user){
+                if (user) {
                     console.log('here')
                     const likeStatusByUser = {
                         likesInfo: {
@@ -127,6 +127,7 @@ export class CommentController {
                     //     "myStatus": await queryService.getLikeStatus(String(user._id))
                     return
                 }
+            }
                 const likeStatusByUnauthorizedUser = {
                     likesInfo: {
                         likesCount: await queryService.getTotalCountLikeOrDislike(id, LikesStatus.LIKE),
@@ -135,7 +136,6 @@ export class CommentController {
                     }
                 }
                 res.status(200).json({...findComment, ...likeStatusByUnauthorizedUser})
-            }
         } catch (error) {
             if (error instanceof Error) {
                 res.sendStatus(404);
