@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import {LikesStatusCfgValues} from "./types";
 
 export interface IBlog {
     _id: mongoose.Schema.Types.ObjectId;
@@ -33,6 +34,11 @@ export interface IComment {
         userId: string,
         userLogin: string,
     }
+    likesInfo: {
+        likesCount: number,
+        dislikesCount: number,
+        myStatus: string
+    }
 }
 
 export interface IDevice {
@@ -51,6 +57,6 @@ export interface UserInvitation {
 
 export interface ILikeStatus {
     _id: mongoose.Schema.Types.ObjectId;
-    likeStatus: string;
+    likeStatus: LikesStatusCfgValues;
     userId: string
 }

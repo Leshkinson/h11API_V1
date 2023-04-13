@@ -5,6 +5,7 @@ import {CommentService} from "../services/comment-service";
 import {JWT, TokenService} from "../application/token-service";
 import {UserService} from "../services/user-service";
 import {LikesStatus} from "../const/const";
+import {LikesStatusCfgValues} from "../ts/types";
 
 export class CommentController {
 
@@ -105,37 +106,36 @@ export class CommentController {
             const token = req.headers.authorization?.split(' ')[1]
             console.log('token', token)
             const findComment: IComment | undefined = await commentService.getOne(id);
-            console.log('findComment', findComment)
-            if (token) {
-                console.log('here')
-                const payload = await tokenService.getPayloadByAccessToken(token) as JWT;
-                console.log('payload', payload)
-                const user = await userService.getUserById(payload.id);
-                if (user) {
+            if (findComment) {
+                if (token) {
                     console.log('here')
-                    const likeStatusByUser = {
-                        likesInfo: {
+                    const payload = await tokenService.getPayloadByAccessToken(token) as JWT;
+                    console.log('payload', payload)
+                    const user = await userService.getUserById(payload.id);
+                    if (user) {
+                        const likeStatusByUser = {
                             likesCount: await queryService.getTotalCountLikeOrDislike(id, LikesStatus.LIKE),
                             dislikesCount: await queryService.getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE),
-                            myStatus: await queryService.getLikeStatus(String(user._id))
+                            myStatus: await queryService.getLikeStatus(String(user._id)) as LikesStatusCfgValues
                         }
+                        if (findComment.hasOwnProperty('likesInfo')) {
+                            findComment.likesInfo = likeStatusByUser
+                        }
+                        res.status(200).json(findComment)
+
+                        return
                     }
-                    console.log('res', {...findComment, ...likeStatusByUser})
-                    res.status(200).json({...findComment, ...likeStatusByUser})
-                    // "likesCount": await queryService. getTotalCountLikeOrDislike(id, LikesStatus.LIKE),
-                    //     "dislikesCount": await queryService. getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE),
-                    //     "myStatus": await queryService.getLikeStatus(String(user._id))
-                    return
                 }
-            }
                 const likeStatusByUnauthorizedUser = {
-                    likesInfo: {
                         likesCount: await queryService.getTotalCountLikeOrDislike(id, LikesStatus.LIKE),
                         dislikesCount: await queryService.getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE),
-                        // myStatus: await queryService.getLikeStatus(String(user._id))
-                    }
+                        myStatus: "None"
                 }
-                res.status(200).json({...findComment, ...likeStatusByUnauthorizedUser})
+                if (findComment.hasOwnProperty('likesInfo')) {
+                    findComment.likesInfo = likeStatusByUnauthorizedUser
+                }
+                res.status(200).json(findComment)
+            }
         } catch (error) {
             if (error instanceof Error) {
                 res.sendStatus(404);

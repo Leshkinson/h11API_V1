@@ -18,7 +18,7 @@ export class CommentsRepository {
     }
 
     public async getOneComment(id: RefType): Promise<IComment | null> {
-        return this.commentModel.findById({_id: id}).lean();
+        return this.commentModel.findById({_id: id});
     }
 
     public async deleteComment(id: RefType) {
