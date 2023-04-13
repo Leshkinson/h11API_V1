@@ -103,6 +103,7 @@ export class CommentController {
 
             const {id} = req.params;
             const {refreshToken} = req.cookies;
+            console.log('refreshToken', refreshToken)
             const findComment: IComment | undefined = await commentService.getOne(id);
             const payload = await tokenService.getPayloadFromToken(refreshToken);
             const user = await userService.getUserByParam(payload.email);
