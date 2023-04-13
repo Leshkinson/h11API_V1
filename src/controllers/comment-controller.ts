@@ -105,11 +105,11 @@ export class CommentController {
             const token = req.headers.authorization?.split(' ')[1]
             console.log('token', token)
             const findComment: IComment | undefined = await commentService.getOne(id);
-            console.log('findComment', )
+            console.log('findComment', findComment)
             if (token) {
                 const payload = await tokenService.getPayloadFromToken(token);
                 console.log('payload', payload)
-                const user = await userService.getUserByParam(payload.email);
+                const user = await userService.getUserById(payload.id);
                 if (user){
                     console.log('here')
                     const likeStatusByUser = {
