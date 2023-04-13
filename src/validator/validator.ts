@@ -1,7 +1,7 @@
 import {BlogService} from "../services/blog-service";
 import {UserService} from "../services/user-service";
 import {body, validationResult, CustomValidator} from 'express-validator';
-import {LikesStatusType} from "../ts/types";
+//import {LikesStatusType} from "../ts/types";
 import {LikesStatus} from "../const/const";
 
 export const myValidationResult = validationResult.withDefaults({
@@ -80,8 +80,8 @@ const isConfirmedEmail: CustomValidator = async (value: string) => {
     return true;
 }
 
-const isLikeStatusCheck: CustomValidator = async (value: string) => {
-    if (!LikesStatus.hasOwnProperty(value)) {
+const isLikeStatusCheck: CustomValidator = (value: string) => {
+    if(!Object.values(LikesStatus).some((item) => item === value)) {
         throw new Error()
     }
 
