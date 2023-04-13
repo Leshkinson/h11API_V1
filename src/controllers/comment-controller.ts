@@ -104,13 +104,12 @@ export class CommentController {
 
             const {id} = req.params;
             const token = req.headers.authorization?.split(' ')[1]
-            console.log('token', token)
             const findComment: IComment | undefined = await commentService.getOne(id);
+            console.log('findComment', findComment)
+
             if (findComment) {
                 if (token) {
-                    console.log('here')
                     const payload = await tokenService.getPayloadByAccessToken(token) as JWT;
-                    console.log('payload', payload)
                     const user = await userService.getUserById(payload.id);
                     if (user) {
                         const likeStatusByUser = {
@@ -121,6 +120,7 @@ export class CommentController {
                         if (findComment.hasOwnProperty('likesInfo')) {
                             findComment.likesInfo = likeStatusByUser
                         }
+                        console.log('findComment2', findComment)
                         res.status(200).json(findComment)
 
                         return
