@@ -8,7 +8,7 @@ export const LikeSchema = new Schema({
     commentId: {type: "string", required: true},
 }, {timestamps: true});
 
-CommentSchema.set('toJSON', {
+LikeSchema.set('toJSON', {
     transform: function (doc, dto) {
         dto.id = dto._id;
         delete dto._id;
