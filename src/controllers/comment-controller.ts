@@ -119,8 +119,9 @@ export class CommentController {
                         }
                         if (findComment.hasOwnProperty('likesInfo')) {
                             findComment.likesInfo = likeStatusByUser
+                            console.log('findComment2', findComment)
                         }
-                        console.log('findComment2', findComment)
+                        console.log('findComment3', findComment)
                         res.status(200).json(findComment)
 
                         return
