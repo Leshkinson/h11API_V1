@@ -3,6 +3,7 @@ import {BlogService} from "../services/blog-service";
 import {PostService} from "../services/post-service";
 import {UserService} from "../services/user-service";
 import {CommentService} from "../services/comment-service";
+import {QueryService} from "../services/query-service";
 
 export class TestController {
     static async testing(req: Request, res: Response): Promise<void> {
@@ -10,11 +11,15 @@ export class TestController {
             const blogService = new BlogService();
             const postService = new PostService();
             const userService = new UserService();
-            const commentService = new CommentService()
+            const queryService = new QueryService();
+            const commentService = new CommentService();
+
             await blogService.testingDelete();
             await postService.testingDelete();
             await userService.testingDelete();
+            await queryService.testingDelete();
             await commentService.testingDelete();
+
             res.sendStatus(204);
         } catch (error) {
             if (error instanceof Error) {

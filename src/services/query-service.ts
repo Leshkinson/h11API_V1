@@ -128,17 +128,6 @@ export class QueryService {
 
     public async makeLikeStatusForTheComment(likeStatus: string, commentId: string, userId: string): Promise<ILikeStatus | null> {
         const like = await this.likeRepository.findLike(userId);
-        // switch (like?.likeStatus) {
-        //     case "None":
-        //         await this.changeLikeStatusForTheComment(String(like?._id), likeStatus)
-        //         break;
-        //     case "Like":
-        //         await this.changeLikeStatusForTheComment(String(like?._id), likeStatus)
-        //         break;
-        //     case "Dislike":
-        //         break;
-        //     default:
-        // }
         if (like) {
             return await this.changeLikeStatusForTheComment(String(like?._id), likeStatus);
         }
@@ -168,5 +157,9 @@ export class QueryService {
         const like = await this.likeRepository.findLike(userId);
         if (like)
             return like.likeStatus
+    }
+
+    public async testingDelete(): Promise<void> {
+        await this.likeRepository.deleteAll();
     }
 }

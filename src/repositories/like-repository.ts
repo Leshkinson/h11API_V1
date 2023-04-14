@@ -28,4 +28,8 @@ export class LikeRepository {
     public async countingLikeOrDislike(commentId: string, param: string) {
         return this.likeModel.find({$and: [{"commentId": commentId}, {"likeStatus": param}]}).count()
     }
+
+    public async deleteAll() {
+        return this.likeModel.deleteMany();
+    }
 }
