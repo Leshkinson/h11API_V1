@@ -147,14 +147,14 @@ export class PostController {
                         return comment
                     })
                     console.log('comments1', comments)
-                    console.log('upgradeComments1', Promise.all(upgradeComments))
+                    console.log('upgradeComments1', Promise.all(upgradeComments).then(values => values))
                     console.log('upgradeComments1.5', upgradeComments)
                     res.status(200).json({
                         "pagesCount": Math.ceil(totalCount / pageSize),
                         "page": pageNumber,
                         "pageSize": pageSize,
                         "totalCount": totalCount,
-                        "items": upgradeComments
+                        "items": Promise.all(upgradeComments).then(values => values)
                     })
 
                     return;
@@ -173,7 +173,7 @@ export class PostController {
                 "page": pageNumber,
                 "pageSize": pageSize,
                 "totalCount": totalCount,
-                "items": upgradeComments.then()
+                "items": Promise.all(upgradeComments).then(values => values)
             })
         } catch (error) {
             if (error instanceof Error) {
