@@ -18,6 +18,6 @@ LikeSchema.set('toJSON', {
     }
 });
 
-//CommentSchema.set('id', true);
+CommentSchema.set('id', true);
 
 export const LikeModel = mongoose.model<ILikeStatus>('LikeStatus', LikeSchema)

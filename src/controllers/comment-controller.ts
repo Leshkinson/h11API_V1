@@ -104,29 +104,20 @@ export class CommentController {
 
             const {id} = req.params;
             const token = req.headers.authorization?.split(' ')[1]
-            console.log(token)
             const findComment: IComment | undefined = await commentService.getOne(id);
-            console.log('findComment1', findComment)
-
             if (findComment) {
                 if (token) {
                     const payload = await tokenService.getPayloadByAccessToken(token) as JWT;
-                    console.log('payload',payload)
                     const user = await userService.getUserById(payload.id);
-                    console.log('user', user)
                     if (user) {
-                        console.log('findComment2', findComment)
                         findComment.likesInfo.likesCount = await queryService.getTotalCountLikeOrDislike(id, LikesStatus.LIKE);
                         findComment.likesInfo.dislikesCount = await queryService.getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE);
                         const myStatus = await queryService.getLikeStatus(String(user._id), String(findComment._id)) as LikesStatusCfgValues;
-                        console.log(myStatus)
                         if(myStatus)
-                        findComment.likesInfo.myStatus = myStatus;
+                            findComment.likesInfo.myStatus = myStatus;
+                        res.status(200).json(findComment);
 
-                        console.log('findComment3', findComment)
-                        res.status(200).json(findComment)
-
-                        return
+                        return;
                     }
                 }
                 findComment.likesInfo.likesCount = await queryService.getTotalCountLikeOrDislike(id, LikesStatus.LIKE);

@@ -2,7 +2,10 @@ import {Request, Response} from "express";
 import {IComment, IPost} from "../ts/interfaces";
 import {PostService} from "../services/post-service";
 import {QueryService} from "../services/query-service";
-import {CommentsRequest, PostsRequest} from "../ts/types";
+import {CommentsRequest, LikesStatusCfgValues, PostsRequest} from "../ts/types";
+import {JWT, TokenService} from "../application/token-service";
+import {UserService} from "../services/user-service";
+import {LikesStatus} from "../const/const";
 
 export class PostController {
     static async getAllPosts(req: Request, res: Response) {
@@ -117,24 +120,54 @@ export class PostController {
 
     static async getAllCommentsForThePost(req: Request, res: Response) {
         try {
+            const userService = new UserService();
+            const tokenService = new TokenService();
             const queryService = new QueryService();
 
             const {postId} = req.params;
+            const token = req.headers.authorization?.split(' ')[1]
+
             let {pageNumber, pageSize, sortDirection, sortBy} = req.query as CommentsRequest;
             pageNumber = Number(pageNumber ?? 1);
             pageSize = Number(pageSize ?? 10);
 
             const comments: IComment[] = await queryService.getCommentsForThePost(postId, pageNumber, pageSize, sortBy, sortDirection);
             const totalCount: number = await queryService.getTotalCountCommentsForThePost(postId);
+            if (token) {
+                const payload = await tokenService.getPayloadByAccessToken(token) as JWT;
+                const user = await userService.getUserById(payload.id);
+                if (user) {
+                    const upgradeComments = comments.map(async comment => {
+                        comment.likesInfo.likesCount = await queryService.getTotalCountLikeOrDislike(String(comment._id), LikesStatus.LIKE);
+                        comment.likesInfo.dislikesCount = await queryService.getTotalCountLikeOrDislike(String(comment._id), LikesStatus.DISLIKE);
+                        const myStatus = await queryService.getLikeStatus(String(user._id), String(comment._id)) as LikesStatusCfgValues;
+                        if(myStatus)
+                            comment.likesInfo.myStatus = myStatus;
+                    })
+                    res.status(200).json({
+                        "pagesCount": Math.ceil(totalCount / pageSize),
+                        "page": pageNumber,
+                        "pageSize": pageSize,
+                        "totalCount": totalCount,
+                        "items": upgradeComments
+                    })
+
+                    return;
+                }
+            }
+            const upgradeComments = comments.map(async comment => {
+                comment.likesInfo.likesCount = await queryService.getTotalCountLikeOrDislike(String(comment._id), LikesStatus.LIKE);
+                comment.likesInfo.dislikesCount = await queryService.getTotalCountLikeOrDislike(String(comment._id), LikesStatus.DISLIKE);
+
+            })
 
             res.status(200).json({
                 "pagesCount": Math.ceil(totalCount / pageSize),
                 "page": pageNumber,
                 "pageSize": pageSize,
                 "totalCount": totalCount,
-                "items": comments
+                "items": upgradeComments
             })
-
         } catch (error) {
             if (error instanceof Error) {
                 res.sendStatus(404);
