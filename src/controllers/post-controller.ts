@@ -137,7 +137,7 @@ export class PostController {
                 const payload = await tokenService.getPayloadByAccessToken(token) as JWT;
                 const user = await userService.getUserById(payload.id);
                 if (user) {
-                    const upgradeComments: Promise<IComment>[] = comments.map(async comment => {
+                    const upgradeComments: Promise<IComment>[] = comments.map(async (comment: IComment) => {
                         comment.likesInfo.likesCount = await queryService.getTotalCountLikeOrDislike(String(comment._id), LikesStatus.LIKE);
                         comment.likesInfo.dislikesCount = await queryService.getTotalCountLikeOrDislike(String(comment._id), LikesStatus.DISLIKE);
                         const myStatus = await queryService.getLikeStatus(String(user._id), String(comment._id)) as LikesStatusCfgValues;
@@ -147,7 +147,7 @@ export class PostController {
                         return comment
                     })
 
-                    console.log('upgradeComments1', Promise.all(upgradeComments))
+                    console.log('upgradeComments1', Promise.all(upgradeComments).then(value => value))
                     console.log('upgradeComments1.5', upgradeComments)
                     res.status(200).json({
                         "pagesCount": Math.ceil(totalCount / pageSize),
