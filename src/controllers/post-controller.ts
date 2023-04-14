@@ -6,6 +6,7 @@ import {CommentsRequest, LikesStatusCfgValues, PostsRequest} from "../ts/types";
 import {JWT, TokenService} from "../application/token-service";
 import {UserService} from "../services/user-service";
 import {LikesStatus} from "../const/const";
+import {log} from "util";
 
 export class PostController {
     static async getAllPosts(req: Request, res: Response) {
@@ -137,17 +138,18 @@ export class PostController {
                 const payload = await tokenService.getPayloadByAccessToken(token) as JWT;
                 const user = await userService.getUserById(payload.id);
                 if (user) {
-                    const upgradeComments = comments.map(async comment => {
+                    const upgradeComments: Promise<IComment>[] = comments.map(async comment => {
                         comment.likesInfo.likesCount = await queryService.getTotalCountLikeOrDislike(String(comment._id), LikesStatus.LIKE);
                         comment.likesInfo.dislikesCount = await queryService.getTotalCountLikeOrDislike(String(comment._id), LikesStatus.DISLIKE);
                         const myStatus = await queryService.getLikeStatus(String(user._id), String(comment._id)) as LikesStatusCfgValues;
                         if (myStatus)
                             comment.likesInfo.myStatus = myStatus;
-
+                        console.log('here', comment)
                         return comment
                     })
 
-                    console.log('upgradeComments1', upgradeComments)
+                    console.log('upgradeComments1', await upgradeComments)
+                    console.log('upgradeComments1.5', upgradeComments)
                     res.status(200).json({
                         "pagesCount": Math.ceil(totalCount / pageSize),
                         "page": pageNumber,
@@ -163,7 +165,7 @@ export class PostController {
                 comment.likesInfo.likesCount = await queryService.getTotalCountLikeOrDislike(String(comment._id), LikesStatus.LIKE);
                 comment.likesInfo.dislikesCount = await queryService.getTotalCountLikeOrDislike(String(comment._id), LikesStatus.DISLIKE);
 
-                return comment
+                return comment;
             })
             console.log('upgradeComments2', upgradeComments)
             res.status(200).json({
@@ -171,7 +173,7 @@ export class PostController {
                 "page": pageNumber,
                 "pageSize": pageSize,
                 "totalCount": totalCount,
-                "items": upgradeComments
+                "items": upgradeComments.then()
             })
         } catch (error) {
             if (error instanceof Error) {
