@@ -104,13 +104,16 @@ export class CommentController {
 
             const {id} = req.params;
             const token = req.headers.authorization?.split(' ')[1]
+            console.log(token)
             const findComment: IComment | undefined = await commentService.getOne(id);
             console.log('findComment1', findComment)
 
             if (findComment) {
                 if (token) {
                     const payload = await tokenService.getPayloadByAccessToken(token) as JWT;
+                    console.log('payload',payload)
                     const user = await userService.getUserById(payload.id);
+                    console.log('user', user)
                     if (user) {
                         // const likeStatusByUser = {
                         //     likesCount: await queryService.getTotalCountLikeOrDislike(id, LikesStatus.LIKE),
@@ -120,7 +123,9 @@ export class CommentController {
                         //console.log('likeStatusByUser', likeStatusByUser)
                         findComment.likesInfo.likesCount = await queryService.getTotalCountLikeOrDislike(id, LikesStatus.LIKE);
                         findComment.likesInfo.dislikesCount = await queryService.getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE);
-                        findComment.likesInfo.myStatus = await queryService.getLikeStatus(String(user._id)) as LikesStatusCfgValues;
+                        const myStatus = await queryService.getLikeStatus(String(user._id)) as LikesStatusCfgValues
+                        if(myStatus)
+                        findComment.likesInfo.myStatus = myStatus;
                         // if (findComment.hasOwnProperty('likesInfo')) {
                         //     findComment.likesInfo = likeStatusByUser
                         //     console.log('findComment2', findComment)
@@ -152,12 +157,17 @@ export class CommentController {
             const commentService = new CommentService();
 
             const {commentId} = req.params;
+            console.log('commentId',commentId)
             const {likeStatus} = req.body;
+            console.log('likeStatus', likeStatus)
             const token = req.headers.authorization?.split(' ')[1];
+            console.log('token', token)
             if (token) {
                 const payload = await tokenService.getPayloadByAccessToken(token) as JWT
                 const user = await userService.getUserById(payload.id);
+                console.log('user', user)
                 const comment: IComment | undefined = await commentService.getOne(commentId);
+                console.log('comment', comment)
                 if (!user || !comment) {
                     res.sendStatus(404)
 

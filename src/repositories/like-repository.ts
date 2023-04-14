@@ -21,6 +21,10 @@ export class LikeRepository {
         return this.likeModel.findOne({userId})
     }
 
+    public async findLikeById(id: RefType): Promise<ILikeStatus | null> {
+        return this.likeModel.findById(id)
+    }
+
     public async countingLikeOrDislike(commentId: string, param: string) {
         return this.likeModel.find({$and: [{"commentId": commentId}, {"likeStatus": param}]}).count()
     }
