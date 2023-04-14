@@ -147,7 +147,7 @@ export class PostController {
                         return comment
                     })
 
-                    console.log('upgradeComments1', Promise.all(upgradeComments).then(value => value))
+                    console.log('upgradeComments1', await Promise.all(upgradeComments).then(value => value))
                     console.log('upgradeComments1.5', upgradeComments)
                     res.status(200).json({
                         "pagesCount": Math.ceil(totalCount / pageSize),
