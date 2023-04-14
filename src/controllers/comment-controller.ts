@@ -115,11 +115,6 @@ export class CommentController {
                     const user = await userService.getUserById(payload.id);
                     console.log('user', user)
                     if (user) {
-                        // const likeStatusByUser = {
-                        //     likesCount: await queryService.getTotalCountLikeOrDislike(id, LikesStatus.LIKE),
-                        //     dislikesCount: await queryService.getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE),
-                        //     myStatus: await queryService.getLikeStatus(String(user._id)) as LikesStatusCfgValues
-                        // }
                         console.log('findComment2', findComment)
                         findComment.likesInfo.likesCount = await queryService.getTotalCountLikeOrDislike(id, LikesStatus.LIKE);
                         findComment.likesInfo.dislikesCount = await queryService.getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE);
@@ -127,10 +122,7 @@ export class CommentController {
                         console.log(myStatus)
                         if(myStatus)
                         findComment.likesInfo.myStatus = myStatus;
-                        // if (findComment.hasOwnProperty('likesInfo')) {
-                        //     findComment.likesInfo = likeStatusByUser
-                        //     console.log('findComment2', findComment)
-                        // }
+
                         console.log('findComment3', findComment)
                         res.status(200).json(findComment)
 
@@ -139,7 +131,7 @@ export class CommentController {
                 }
                 findComment.likesInfo.likesCount = await queryService.getTotalCountLikeOrDislike(id, LikesStatus.LIKE);
                 findComment.likesInfo.dislikesCount = await queryService.getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE);
-                console.log('findComment3', findComment)
+                console.log('findComment4', findComment)
                 res.status(200).json(findComment)
             }
         } catch (error) {

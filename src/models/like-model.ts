@@ -5,7 +5,8 @@ import {CommentSchema} from "./comment-model";
 export const LikeSchema = new Schema({
     likeStatus: {type: "string", required: true},
     userId: {type: "string", required: true},
-    commentId: {type: "string", required: true},
+    commentId: {type: mongoose.Types.ObjectId, ref: 'Comment'},
+    //commentId: {type: "string", required: true},
 }, {timestamps: true});
 
 LikeSchema.set('toJSON', {
@@ -17,6 +18,6 @@ LikeSchema.set('toJSON', {
     }
 });
 
-CommentSchema.set('id', true);
+//CommentSchema.set('id', true);
 
 export const LikeModel = mongoose.model<ILikeStatus>('LikeStatus', LikeSchema)
