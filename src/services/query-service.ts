@@ -152,7 +152,7 @@ export class QueryService {
             // return await this.likeRepository.updateLikeStatus(likeId, 'None')
             return await this.likeRepository.updateLikeStatus(likeId, likeStatus)
         }
-        // return await this.likeRepository.updateLikeStatus(likeId, likeStatus)
+        return like
     }
 
     public async getTotalCountLikeOrDislike(commentId: string, param: string) {
