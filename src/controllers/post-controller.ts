@@ -141,8 +141,10 @@ export class PostController {
                         comment.likesInfo.likesCount = await queryService.getTotalCountLikeOrDislike(String(comment._id), LikesStatus.LIKE);
                         comment.likesInfo.dislikesCount = await queryService.getTotalCountLikeOrDislike(String(comment._id), LikesStatus.DISLIKE);
                         const myStatus = await queryService.getLikeStatus(String(user._id), String(comment._id)) as LikesStatusCfgValues;
-                        if(myStatus)
+                        if (myStatus)
                             comment.likesInfo.myStatus = myStatus;
+
+                        return comment
                     })
                     res.status(200).json({
                         "pagesCount": Math.ceil(totalCount / pageSize),
@@ -159,6 +161,7 @@ export class PostController {
                 comment.likesInfo.likesCount = await queryService.getTotalCountLikeOrDislike(String(comment._id), LikesStatus.LIKE);
                 comment.likesInfo.dislikesCount = await queryService.getTotalCountLikeOrDislike(String(comment._id), LikesStatus.DISLIKE);
 
+                return comment
             })
 
             res.status(200).json({
