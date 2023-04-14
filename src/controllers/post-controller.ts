@@ -146,6 +146,8 @@ export class PostController {
 
                         return comment
                     })
+
+                    console.log('upgradeComments1', upgradeComments)
                     res.status(200).json({
                         "pagesCount": Math.ceil(totalCount / pageSize),
                         "page": pageNumber,
@@ -163,7 +165,7 @@ export class PostController {
 
                 return comment
             })
-
+            console.log('upgradeComments2', upgradeComments)
             res.status(200).json({
                 "pagesCount": Math.ceil(totalCount / pageSize),
                 "page": pageNumber,
