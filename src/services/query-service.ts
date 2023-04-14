@@ -148,10 +148,11 @@ export class QueryService {
 
     public async changeLikeStatusForTheComment(likeId: string, likeStatus: string): Promise<ILikeStatus | null> {
         const like = await this.likeRepository.findLikeById(likeId);
-        if(like?.likeStatus === likeStatus){
-            return await this.likeRepository.updateLikeStatus(likeId, 'None')
+        if(like?.likeStatus !== likeStatus){
+            // return await this.likeRepository.updateLikeStatus(likeId, 'None')
+            return await this.likeRepository.updateLikeStatus(likeId, likeStatus)
         }
-        return await this.likeRepository.updateLikeStatus(likeId, likeStatus)
+        // return await this.likeRepository.updateLikeStatus(likeId, likeStatus)
     }
 
     public async getTotalCountLikeOrDislike(commentId: string, param: string) {
