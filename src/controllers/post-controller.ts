@@ -146,15 +146,15 @@ export class PostController {
                         console.log('here', comment)
                         return comment
                     })
-                    console.log('comments1', comments)
-                    console.log('upgradeComments1', Promise.all(upgradeComments).then(values => values))
+
+                    console.log('upgradeComments1', Promise.all(upgradeComments))
                     console.log('upgradeComments1.5', upgradeComments)
                     res.status(200).json({
                         "pagesCount": Math.ceil(totalCount / pageSize),
                         "page": pageNumber,
                         "pageSize": pageSize,
                         "totalCount": totalCount,
-                        "items": Promise.all(upgradeComments).then(values => values)
+                        "items": Promise.all(upgradeComments)
                     })
 
                     return;
