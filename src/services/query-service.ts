@@ -127,7 +127,7 @@ export class QueryService {
     }
 
     public async makeLikeStatusForTheComment(likeStatus: string, commentId: string, userId: string): Promise<ILikeStatus | null> {
-        const like = await this.likeRepository.findLike(userId);
+        const like = await this.likeRepository.findLike(userId, commentId);
         if (like) {
             return await this.changeLikeStatusForTheComment(String(like?._id), likeStatus);
         }
