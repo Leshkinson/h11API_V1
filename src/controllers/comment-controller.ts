@@ -120,17 +120,18 @@ export class CommentController {
                         //     dislikesCount: await queryService.getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE),
                         //     myStatus: await queryService.getLikeStatus(String(user._id)) as LikesStatusCfgValues
                         // }
-                        //console.log('likeStatusByUser', likeStatusByUser)
+                        console.log('findComment2', findComment)
                         findComment.likesInfo.likesCount = await queryService.getTotalCountLikeOrDislike(id, LikesStatus.LIKE);
                         findComment.likesInfo.dislikesCount = await queryService.getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE);
-                        const myStatus = await queryService.getLikeStatus(String(user._id)) as LikesStatusCfgValues
+                        const myStatus = await queryService.getLikeStatus(String(user._id)) as LikesStatusCfgValues;
+                        console.log(myStatus)
                         if(myStatus)
                         findComment.likesInfo.myStatus = myStatus;
                         // if (findComment.hasOwnProperty('likesInfo')) {
                         //     findComment.likesInfo = likeStatusByUser
                         //     console.log('findComment2', findComment)
                         // }
-                        console.log('findComment2', findComment)
+                        console.log('findComment3', findComment)
                         res.status(200).json(findComment)
 
                         return
