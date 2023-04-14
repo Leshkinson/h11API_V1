@@ -153,8 +153,8 @@ export class QueryService {
         throw new Error()
     }
 
-    public async getLikeStatus(userId: string) {
-        const like = await this.likeRepository.findLike(userId);
+    public async getLikeStatus(userId: string, commentId: string) {
+        const like = await this.likeRepository.findLike(userId, commentId);
         if (like)
             return like.likeStatus
     }

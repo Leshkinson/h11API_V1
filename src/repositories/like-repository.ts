@@ -17,8 +17,8 @@ export class LikeRepository {
         return this.likeModel.findOneAndUpdate({_id: id}, {"likeStatus": likeStatus})
     }
 
-    public async findLike(userId: string): Promise<ILikeStatus | null> {
-        return this.likeModel.findOne({userId})
+    public async findLike(userId: string, commentId: string): Promise<ILikeStatus | null> {
+        return this.likeModel.findOne({$and:[{userId}, {commentId}]})
     }
 
     public async findLikeById(id: RefType): Promise<ILikeStatus | null> {

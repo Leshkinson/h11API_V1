@@ -123,7 +123,7 @@ export class CommentController {
                         console.log('findComment2', findComment)
                         findComment.likesInfo.likesCount = await queryService.getTotalCountLikeOrDislike(id, LikesStatus.LIKE);
                         findComment.likesInfo.dislikesCount = await queryService.getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE);
-                        const myStatus = await queryService.getLikeStatus(String(user._id)) as LikesStatusCfgValues;
+                        const myStatus = await queryService.getLikeStatus(String(user._id), String(findComment._id)) as LikesStatusCfgValues;
                         console.log(myStatus)
                         if(myStatus)
                         findComment.likesInfo.myStatus = myStatus;
