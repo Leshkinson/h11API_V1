@@ -6,7 +6,6 @@ import {CommentsRequest, LikesStatusCfgValues, PostsRequest} from "../ts/types";
 import {JWT, TokenService} from "../application/token-service";
 import {UserService} from "../services/user-service";
 import {LikesStatus} from "../const/const";
-import {log} from "util";
 
 export class PostController {
     static async getAllPosts(req: Request, res: Response) {
@@ -147,8 +146,8 @@ export class PostController {
                         console.log('here', comment)
                         return comment
                     })
-
-                    console.log('upgradeComments1', await upgradeComments)
+                    console.log('comments1', comments)
+                    console.log('upgradeComments1', Promise.all(upgradeComments))
                     console.log('upgradeComments1.5', upgradeComments)
                     res.status(200).json({
                         "pagesCount": Math.ceil(totalCount / pageSize),
@@ -161,6 +160,7 @@ export class PostController {
                     return;
                 }
             }
+            console.log('comments2', comments)
             const upgradeComments = comments.map(async comment => {
                 comment.likesInfo.likesCount = await queryService.getTotalCountLikeOrDislike(String(comment._id), LikesStatus.LIKE);
                 comment.likesInfo.dislikesCount = await queryService.getTotalCountLikeOrDislike(String(comment._id), LikesStatus.DISLIKE);
