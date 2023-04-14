@@ -143,24 +143,24 @@ export class PostController {
                         const myStatus = await queryService.getLikeStatus(String(user._id), String(comment._id)) as LikesStatusCfgValues;
                         if (myStatus)
                             comment.likesInfo.myStatus = myStatus;
-                        console.log('here', comment)
+
                         return comment
                     })
 
-                    console.log('upgradeComments1', await Promise.all(upgradeComments).then(value => value))
-                    console.log('upgradeComments1.5', upgradeComments)
+                    //console.log('upgradeComments1', await Promise.all(upgradeComments).then(value => value))
+                    //console.log('upgradeComments1.5', upgradeComments)
                     res.status(200).json({
                         "pagesCount": Math.ceil(totalCount / pageSize),
                         "page": pageNumber,
                         "pageSize": pageSize,
                         "totalCount": totalCount,
-                        "items": Promise.all(upgradeComments)
+                        "items": await Promise.all(upgradeComments).then(value => value)
                     })
 
                     return;
                 }
             }
-            console.log('comments2', comments)
+
             const upgradeComments = comments.map(async comment => {
                 comment.likesInfo.likesCount = await queryService.getTotalCountLikeOrDislike(String(comment._id), LikesStatus.LIKE);
                 comment.likesInfo.dislikesCount = await queryService.getTotalCountLikeOrDislike(String(comment._id), LikesStatus.DISLIKE);
@@ -173,7 +173,7 @@ export class PostController {
                 "page": pageNumber,
                 "pageSize": pageSize,
                 "totalCount": totalCount,
-                "items": Promise.all(upgradeComments).then(values => values)
+                "items": await Promise.all(upgradeComments).then(value => value)
             })
         } catch (error) {
             if (error instanceof Error) {
