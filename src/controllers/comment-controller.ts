@@ -1,43 +1,43 @@
 import {Request, Response} from "express";
 import {IComment} from "../ts/interfaces";
+import {LikesStatus} from "../const/const";
+import {LikesStatusCfgValues} from "../ts/types";
+import {UserService} from "../services/user-service";
 import {QueryService} from "../services/query-service";
 import {CommentService} from "../services/comment-service";
 import {JWT, TokenService} from "../application/token-service";
-import {UserService} from "../services/user-service";
-import {LikesStatus} from "../const/const";
-import {LikesStatusCfgValues} from "../ts/types";
 
 export class CommentController {
 
     static async updateComment(req: Request, res: Response) {
         try {
-            const commentService = new CommentService();
-            const tokenService = new TokenService();
             const userService = new UserService();
+            const tokenService = new TokenService();
+            const commentService = new CommentService();
 
             const {commentId} = req.params;
             const {content} = req.body;
-            const token = req.headers.authorization?.split(' ')[1]
+            const token = req.headers.authorization?.split(' ')[1];
             if (token) {
-                const payload = await tokenService.getPayloadByAccessToken(token) as JWT
+                const payload = await tokenService.getPayloadByAccessToken(token) as JWT;
                 const user = await userService.getUserById(payload.id);
                 const comment: IComment | undefined = await commentService.getOne(commentId);
                 if (!user || !comment) {
-                    res.sendStatus(404)
+                    res.sendStatus(404);
 
-                    return
+                    return;
                 }
                 if (comment?.commentatorInfo.userLogin !== user?.login) {
-                    res.sendStatus(403)
+                    res.sendStatus(403);
 
-                    return
+                    return;
                 }
                 if (comment?.commentatorInfo.userId !== user?._id.toString()) {
-                    res.sendStatus(403)
+                    res.sendStatus(403);
 
-                    return
+                    return;
                 }
-                const updatedComment: IComment | undefined = await commentService.update(commentId, content)
+                const updatedComment: IComment | undefined = await commentService.update(commentId, content);
 
                 if (updatedComment) res.sendStatus(204);
             }
@@ -51,9 +51,9 @@ export class CommentController {
 
     static async deleteComment(req: Request, res: Response) {
         try {
-            const commentService = new CommentService()
-            const tokenService = new TokenService();
             const userService = new UserService();
+            const tokenService = new TokenService();
+            const commentService = new CommentService();
 
             const {id} = req.params;
             const token = req.headers.authorization?.split(' ')[1]
@@ -78,7 +78,6 @@ export class CommentController {
                 }
 
                 if (comment?.commentatorInfo.userId !== user?._id.toString()) {
-                    console.log('Here4')
                     res.sendStatus(403)
                     return
                 }
@@ -103,7 +102,7 @@ export class CommentController {
             const commentService = new CommentService();
 
             const {id} = req.params;
-            const token = req.headers.authorization?.split(' ')[1]
+            const token = req.headers.authorization?.split(' ')[1];
             const findComment: IComment | undefined = await commentService.getOne(id);
             if (findComment) {
                 if (token) {
@@ -122,8 +121,7 @@ export class CommentController {
                 }
                 findComment.likesInfo.likesCount = await queryService.getTotalCountLikeOrDislike(id, LikesStatus.LIKE);
                 findComment.likesInfo.dislikesCount = await queryService.getTotalCountLikeOrDislike(id, LikesStatus.DISLIKE);
-                console.log('findComment4', findComment)
-                res.status(200).json(findComment)
+                res.status(200).json(findComment);
             }
         } catch (error) {
             if (error instanceof Error) {
@@ -141,21 +139,16 @@ export class CommentController {
             const commentService = new CommentService();
 
             const {commentId} = req.params;
-            console.log('commentId',commentId)
             const {likeStatus} = req.body;
-            console.log('likeStatus', likeStatus)
             const token = req.headers.authorization?.split(' ')[1];
-            console.log('token', token)
             if (token) {
-                const payload = await tokenService.getPayloadByAccessToken(token) as JWT
+                const payload = await tokenService.getPayloadByAccessToken(token) as JWT;
                 const user = await userService.getUserById(payload.id);
-                console.log('user', user)
                 const comment: IComment | undefined = await commentService.getOne(commentId);
-                console.log('comment', comment)
                 if (!user || !comment) {
-                    res.sendStatus(404)
+                    res.sendStatus(404);
 
-                    return
+                    return;
                 }
                 await queryService.makeLikeStatusForTheComment(likeStatus, commentId, String(user._id));
                 res.sendStatus(204);

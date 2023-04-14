@@ -1,11 +1,11 @@
 import {Request, Response} from "express";
+import {LikesStatus} from "../const/const";
 import {IComment, IPost} from "../ts/interfaces";
 import {PostService} from "../services/post-service";
-import {QueryService} from "../services/query-service";
-import {CommentsRequest, LikesStatusCfgValues, PostsRequest} from "../ts/types";
-import {JWT, TokenService} from "../application/token-service";
 import {UserService} from "../services/user-service";
-import {LikesStatus} from "../const/const";
+import {QueryService} from "../services/query-service";
+import {JWT, TokenService} from "../application/token-service";
+import {CommentsRequest, LikesStatusCfgValues, PostsRequest} from "../ts/types";
 
 export class PostController {
     static async getAllPosts(req: Request, res: Response) {
@@ -147,14 +147,12 @@ export class PostController {
                         return comment
                     })
 
-                    //console.log('upgradeComments1', await Promise.all(upgradeComments).then(value => value))
-                    //console.log('upgradeComments1.5', upgradeComments)
                     res.status(200).json({
                         "pagesCount": Math.ceil(totalCount / pageSize),
                         "page": pageNumber,
                         "pageSize": pageSize,
                         "totalCount": totalCount,
-                        "items": await Promise.all(upgradeComments).then(value => value)
+                        "items": await Promise.all(upgradeComments)
                     })
 
                     return;
@@ -173,7 +171,7 @@ export class PostController {
                 "page": pageNumber,
                 "pageSize": pageSize,
                 "totalCount": totalCount,
-                "items": await Promise.all(upgradeComments).then(value => value)
+                "items": await Promise.all(upgradeComments)
             })
         } catch (error) {
             if (error instanceof Error) {
